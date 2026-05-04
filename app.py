@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import sqlite3
 import requests
 from datetime import datetime, timedelta
+import random
 
 app = Flask(__name__)
 
@@ -24,7 +25,7 @@ def init_db():
 init_db()
 
 # -----------------------------
-# 🏠 ГЛАВНАЯ
+# 🏠 ГЛАВНАЯ СТРАНИЦА
 # -----------------------------
 @app.route("/")
 def index():
@@ -47,23 +48,28 @@ def get_flights():
     if not route:
         return {"flights": []}
 
-    origin, dest = route.split("-")
+    try:
+        origin, dest = route.split("-")
+    except:
+        return {"flights": []}
 
     conn = sqlite3.connect("flights.db")
     c = conn.cursor()
 
-    # 🔥 1. ПРОБУЕМ ВЗЯТЬ ИЗ КЕША
+    # 🔥 1. ПРОБУЕМ КЕШ
     c.execute("SELECT price, date FROM flights WHERE route=?", (route,))
     rows = c.fetchall()
 
     if rows:
         conn.close()
         return {
-            return {"flights": []}
+            "flights": [
+                {"price": r[0], "dep": r[1], "arr": r[1]}
+                for r in rows[:5]
             ]
         }
 
-    # 🔥 2. ЕСЛИ НЕТ — ЗАПРОС К API
+    # 🔥 2. ПРОБУЕМ API
     try:
         res = requests.get(
             "https://api.skypicker.com/flights",
@@ -79,40 +85,39 @@ def get_flights():
             timeout=10
         )
 
-        data = res.json().get("data", [])
+        if res.status_code == 200:
+            data = res.json().get("data", [])
 
-        flights = []
+            flights = []
 
-        for f in data:
-            seg = f["route"][0]
-            price = f["price"]
+            for f in data:
+                seg = f["route"][0]
+                price = f["price"]
 
-            flights.append({
-                "price": price,
-                "dep": seg["local_departure"][:16],
-                "arr": seg["local_arrival"][:16]
-            })
+                flights.append({
+                    "price": price,
+                    "dep": seg["local_departure"][:16],
+                    "arr": seg["local_arrival"][:16]
+                })
 
-            # сохраняем в базу
-            c.execute(
-                "INSERT INTO flights VALUES (?, ?, ?)",
-                (route, seg["local_departure"][:10], price)
-            )
+                # сохраняем в БД
+                c.execute(
+                    "INSERT INTO flights VALUES (?, ?, ?)",
+                    (route, seg["local_departure"][:10], price)
+                )
 
-        conn.commit()
-        conn.close()
+            conn.commit()
+            conn.close()
 
-        if flights:
-            return {"flights": flights}
+            if flights:
+                return {"flights": flights}
 
     except:
         pass
 
-        conn.close()
+    conn.close()
 
-    # 🔥 fallback (ВСЕГДА работает)
-    import random
-
+    # 🔥 3. FALLBACK (ВСЕГДА ДАЁТ ДАННЫЕ)
     base_prices = {
         "CDG": 180,
         "FCO": 140,
@@ -133,12 +138,16 @@ def get_flights():
 
     return {"flights": flights}
 
+
 # -----------------------------
-# 📅 КАЛЕНДАРЬ ЦЕН
+# 📅 КАЛЕНДАРЬ
 # -----------------------------
 @app.route("/api/calendar")
 def calendar():
     route = request.args.get("route")
+
+    if not route:
+        return {"dates": []}
 
     conn = sqlite3.connect("flights.db")
     c = conn.cursor()
@@ -156,6 +165,7 @@ def calendar():
     return {
         "dates": [{"date": r[0], "price": r[1]} for r in rows]
     }
+
 
 # -----------------------------
 # 🚀 ЗАПУСК
