@@ -1,7 +1,23 @@
 from flask import Flask, render_template, request
+import sqlite3
+import requests
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
+def init_db():
+    conn = sqlite3.connect("flights.db")
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS flights (
+            route TEXT,
+            date TEXT,
+            price INTEGER
+        )
+    """)
+    conn.commit()
+    conn.close()
 
+init_db()
 # главная страница
 @app.route("/")
 def index():
@@ -15,10 +31,6 @@ def map_view():
 # API рейсов (стабильная версия)
 @app.route("/api/flights")
 def get_flights():
-    import requests
-    from datetime import datetime, timedelta
-    import random
-
     route = request.args.get("route")
 
     if not route:
@@ -26,82 +38,87 @@ def get_flights():
 
     origin, dest = route.split("-")
 
-    url = "https://api.skypicker.com/flights"
+    conn = sqlite3.connect("flights.db")
+    c = conn.cursor()
 
-    headers = {
-        "User-Agent": "Mozilla/5.0"
-    }
+    # 🔥 пробуем из базы
+    c.execute("SELECT price, date FROM flights WHERE route=?", (route,))
+    rows = c.fetchall()
 
-    today = datetime.now()
-
-    # пробуем несколько диапазонов
-    ranges = [
-        (0, 3),
-        (0, 7),
-        (7, 30)
-    ]
-
-    for r in ranges:
-        date_from = (today + timedelta(days=r[0])).strftime("%d/%m/%Y")
-        date_to = (today + timedelta(days=r[1])).strftime("%d/%m/%Y")
-
-        params = {
-            "fly_from": origin,
-            "fly_to": dest,
-            "date_from": date_from,
-            "date_to": date_to,
-            "curr": "USD",
-            "limit": 5,
-            "max_stopovers": 0
+    if rows:
+        conn.close()
+        return {
+            "flights": [
+                {"price": r[0], "dep": r[1], "arr": r[1]}
+                for r in rows[:5]
+            ]
         }
 
-        try:
-            res = requests.get(url, params=params, headers=headers, timeout=10)
+    # 🔥 если нет — запрос к API
+    url = "https://api.skypicker.com/flights"
 
-            if res.status_code != 200:
-                continue
+    try:
+        res = requests.get(url, params={
+            "fly_from": origin,
+            "fly_to": dest,
+            "date_from": datetime.now().strftime("%d/%m/%Y"),
+            "date_to": (datetime.now() + timedelta(days=30)).strftime("%d/%m/%Y"),
+            "curr": "USD",
+            "limit": 5
+        }, headers={"User-Agent": "Mozilla/5.0"})
 
-            data = res.json().get("data", [])
+        data = res.json().get("data", [])
 
-            if data:
-                flights = []
+        flights = []
 
-                for f in data:
-                    seg = f["route"][0]
+        for f in data:
+            seg = f["route"][0]
+            price = f["price"]
 
-                    flights.append({
-                        "price": f["price"],
-                        "dep": seg["local_departure"][:16],
-                        "arr": seg["local_arrival"][:16],
-                        "airline": f["airlines"][0]
-                    })
+            flights.append({
+                "price": price,
+                "dep": seg["local_departure"][:16],
+                "arr": seg["local_arrival"][:16]
+            })
 
-                return {"flights": flights}
+            # сохраняем
+            c.execute(
+                "INSERT INTO flights VALUES (?, ?, ?)",
+                (route, seg["local_departure"][:10], price)
+            )
 
-        except:
-            continue
+        conn.commit()
+        conn.close()
 
-    # 🔥 fallback если API не дал результат
-    base_prices = {
-        "CDG": 180,
-        "FCO": 140,
-        "LHR": 220,
-        "JFK": 450
+        if flights:
+            return {"flights": flights}
+@app.route("/api/calendar")
+def calendar():
+    route = request.args.get("route")
+
+    conn = sqlite3.connect("flights.db")
+    c = conn.cursor()
+
+    c.execute("""
+        SELECT date, MIN(price)
+        FROM flights
+        WHERE route=?
+        GROUP BY date
+    """, (route,))
+
+    rows = c.fetchall()
+    conn.close()
+
+    return {
+        "dates": [{"date": r[0], "price": r[1]} for r in rows]
     }
 
-    base = base_prices.get(dest, 200)
+    except:
+        pass
 
-    flights = []
+    conn.close()
 
-    for i in range(3):
-        flights.append({
-            "price": base + random.randint(-30, 60),
-            "dep": f"{random.randint(6,22)}:00",
-            "arr": f"{random.randint(8,23)}:00",
-            "airline": "DemoAir"
-        })
-
-    return {"flights": flights}
+    return {"flights": []}
 
 if __name__ == "__main__":
     app.run()

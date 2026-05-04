@@ -15,18 +15,24 @@ var map = L.map('map').setView([30, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 const cities = [
-    {name:"CDG", coords:[48.85,2.35]},
-    {name:"FCO", coords:[41.90,12.49]},
-    {name:"LHR", coords:[51.50,-0.12]},
-    {name:"JFK", coords:[40.71,-74.00]},
-    {name:"LAX", coords:[34.05,-118.24]}
+    { code: "CDG", lat: 48.85, lng: 2.35 },
+    { code: "FCO", lat: 41.9, lng: 12.5 },
+    { code: "LHR", lat: 51.5, lng: -0.1 },
+    { code: "JFK", lat: 40.7, lng: -74 }
 ];
 
 cities.forEach(city => {
-    let marker = L.marker(city.coords).addTo(map);
+    let marker = L.marker([city.lat, city.lng]).addTo(map);
 
-    marker.on('click', () => {
-        window.location.href = "/?route=TLV-" + city.name;
+    marker.on("click", async () => {
+        let res = await fetch(`/api/flights?route=TLV-${city.code}`);
+        let data = await res.json();
+
+        if (data.flights.length > 0) {
+            marker.bindPopup(`💰 $${data.flights[0].price}`).openPopup();
+        } else {
+            marker.bindPopup("Нет данных").openPopup();
+        }
     });
 });
 </script>

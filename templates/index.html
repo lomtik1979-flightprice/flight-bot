@@ -81,6 +81,8 @@
 </div>
 
 <div id="results"></div>
+<h3>📅 Cheap Dates</h3>
+<div id="calendar"></div>
 
 </div>
 
@@ -102,6 +104,7 @@ async function search() {
 
     document.getElementById("results").innerHTML = "⏳ Loading...";
 
+    loadCalendar(route);
     const res = await fetch(`/api/flights?route=${route}&max_price=${price}`);
     const data = await res.json();
 
@@ -109,7 +112,23 @@ async function search() {
 
     if (data.flights.length === 0) {
         html = "<p>❌ No flights found</p>";
-    } else {
+    } 
+async function loadCalendar(route) {
+    const res = await fetch(`/api/calendar?route=${route}`);
+    const data = await res.json();
+
+    let html = "";
+
+    data.dates.forEach(d => {
+        html += `
+        <div class="card">
+            📅 ${d.date} — 💰 $${d.price}
+        </div>`;
+    });
+
+    document.getElementById("calendar").innerHTML = html;
+}
+else {
         data.flights.forEach(f => {
             html += `
             <div class="card ${getClass(f.price)}">
