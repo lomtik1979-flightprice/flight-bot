@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flight Finder</title>
+    <style>
+        body { background:#0b0f1a; color:white; font-family:Arial; }
+        .container { max-width:900px; margin:auto; padding:20px; }
+        input, button { padding:10px; margin:5px; border-radius:5px; border:none; }
+        button { background:#00d4ff; cursor:pointer; }
+        .card { background:#1a1f2e; padding:15px; margin-top:10px; border-radius:10px; }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>✈️ Flight Finder</h1>
+
+<input id="route" placeholder="TLV-CDG">
+<input id="price" placeholder="Max price (e.g. 500)">
+<button onclick="search()">Search</button>
+
+<a href="/map"><button>🌍 Map</button></a>
+
+<div id="results"></div>
+
+</div>
+
+<script>
+async function search() {
+    let route = document.getElementById("route").value;
+    let price = document.getElementById("price").value;
+
+    const res = await fetch(`/api/flights?route=${route}&max_price=${price}`);
+    const data = await res.json();
+
+    let html = "";
+
+    if (data.flights.length === 0) {
+        html = "<p>No flights found</p>";
+    } else {
+        data.flights.forEach(f => {
+            html += `
+            <div class="card">
+                💰 $${f.price}<br>
+                🕐 ${f.dep} → ${f.arr}
+            </div>
+            `;
+        });
+    }
+
+    document.getElementById("results").innerHTML = html;
+}
+</script>
+
+</body>
+</html>

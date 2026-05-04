@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<style>body{margin:0;}#map{height:100vh;}</style>
+</head>
+
+<body>
+<div id="map"></div>
+
+<script>
+var map = L.map('map').setView([30, 0], 2);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+const cities = [
+    {name:"CDG", coords:[48.85,2.35]},
+    {name:"FCO", coords:[41.90,12.49]},
+    {name:"LHR", coords:[51.50,-0.12]},
+    {name:"JFK", coords:[40.71,-74.00]},
+    {name:"LAX", coords:[34.05,-118.24]}
+];
+
+cities.forEach(city => {
+    let marker = L.marker(city.coords).addTo(map);
+
+    marker.on('click', () => {
+        window.location.href = "/?route=TLV-" + city.name;
+    });
+});
+</script>
+
+</body>
+</html>
