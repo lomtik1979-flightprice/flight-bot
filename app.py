@@ -4,6 +4,10 @@ import requests
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
+
+# -----------------------------
+# 🧠 ИНИЦИАЛИЗАЦИЯ БАЗЫ
+# -----------------------------
 def init_db():
     conn = sqlite3.connect("flights.db")
     c = conn.cursor()
@@ -18,17 +22,24 @@ def init_db():
     conn.close()
 
 init_db()
-# главная страница
+
+# -----------------------------
+# 🏠 ГЛАВНАЯ
+# -----------------------------
 @app.route("/")
 def index():
     return render_template("index.html")
 
-# карта
+# -----------------------------
+# 🌍 КАРТА
+# -----------------------------
 @app.route("/map")
 def map_view():
     return render_template("map.html")
 
-# API рейсов (стабильная версия)
+# -----------------------------
+# ✈️ API РЕЙСОВ
+# -----------------------------
 @app.route("/api/flights")
 def get_flights():
     route = request.args.get("route")
@@ -41,7 +52,7 @@ def get_flights():
     conn = sqlite3.connect("flights.db")
     c = conn.cursor()
 
-    # 🔥 пробуем из базы
+    # 🔥 1. ПРОБУЕМ ВЗЯТЬ ИЗ КЕША
     c.execute("SELECT price, date FROM flights WHERE route=?", (route,))
     rows = c.fetchall()
 
@@ -54,18 +65,21 @@ def get_flights():
             ]
         }
 
-    # 🔥 если нет — запрос к API
-    url = "https://api.skypicker.com/flights"
-
+    # 🔥 2. ЕСЛИ НЕТ — ЗАПРОС К API
     try:
-        res = requests.get(url, params={
-            "fly_from": origin,
-            "fly_to": dest,
-            "date_from": datetime.now().strftime("%d/%m/%Y"),
-            "date_to": (datetime.now() + timedelta(days=30)).strftime("%d/%m/%Y"),
-            "curr": "USD",
-            "limit": 5
-        }, headers={"User-Agent": "Mozilla/5.0"})
+        res = requests.get(
+            "https://api.skypicker.com/flights",
+            params={
+                "fly_from": origin,
+                "fly_to": dest,
+                "date_from": datetime.now().strftime("%d/%m/%Y"),
+                "date_to": (datetime.now() + timedelta(days=30)).strftime("%d/%m/%Y"),
+                "curr": "USD",
+                "limit": 5
+            },
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=10
+        )
 
         data = res.json().get("data", [])
 
@@ -81,7 +95,7 @@ def get_flights():
                 "arr": seg["local_arrival"][:16]
             })
 
-            # сохраняем
+            # сохраняем в базу
             c.execute(
                 "INSERT INTO flights VALUES (?, ?, ?)",
                 (route, seg["local_departure"][:10], price)
@@ -92,6 +106,24 @@ def get_flights():
 
         if flights:
             return {"flights": flights}
+
+    except:
+        pass
+
+    conn.close()
+
+    # 🔥 3. FALLBACK (если API не ответил)
+    return {
+        "flights": [
+            {"price": 180, "dep": "demo", "arr": "demo"},
+            {"price": 240, "dep": "demo", "arr": "demo"},
+            {"price": 320, "dep": "demo", "arr": "demo"}
+        ]
+    }
+
+# -----------------------------
+# 📅 КАЛЕНДАРЬ ЦЕН
+# -----------------------------
 @app.route("/api/calendar")
 def calendar():
     route = request.args.get("route")
@@ -113,12 +145,8 @@ def calendar():
         "dates": [{"date": r[0], "price": r[1]} for r in rows]
     }
 
-    except:
-        pass
-
-    conn.close()
-
-    return {"flights": []}
-
+# -----------------------------
+# 🚀 ЗАПУСК
+# -----------------------------
 if __name__ == "__main__":
     app.run()
