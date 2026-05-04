@@ -56,7 +56,6 @@
         .quick button {
             background: #1f2638;
         }
-
     </style>
 </head>
 
@@ -73,7 +72,6 @@
     <a href="/map"><button>🌍 Map</button></a>
 </div>
 
-<!-- быстрые маршруты -->
 <div class="quick">
     <b>🔥 Popular:</b>
     <button onclick="quick('TLV-CDG')">Paris</button>
@@ -87,7 +85,6 @@
 </div>
 
 <script>
-
 function quick(route) {
     document.getElementById("route").value = route;
     search();
@@ -125,7 +122,6 @@ async function search() {
 
     document.getElementById("results").innerHTML = html;
 }
-
 </script>
 
 </body>
