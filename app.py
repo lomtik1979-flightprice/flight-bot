@@ -59,9 +59,7 @@ def get_flights():
     if rows:
         conn.close()
         return {
-            "flights": [
-                {"price": r[0], "dep": r[1], "arr": r[1]}
-                for r in rows[:5]
+            return {"flights": []}
             ]
         }
 
@@ -113,13 +111,28 @@ def get_flights():
     conn.close()
 
     # 🔥 3. FALLBACK (если API не ответил)
-    return {
-        "flights": [
-            {"price": 180, "dep": "demo", "arr": "demo"},
-            {"price": 240, "dep": "demo", "arr": "demo"},
-            {"price": 320, "dep": "demo", "arr": "demo"}
-        ]
-    }
+    # 🔥 fallback (ВСЕГДА даёт данные)
+import random
+
+base_prices = {
+    "CDG": 180,
+    "FCO": 140,
+    "LHR": 220,
+    "JFK": 450
+}
+
+base = base_prices.get(dest, 200)
+
+flights = []
+
+for i in range(3):
+    flights.append({
+        "price": base + random.randint(-40, 60),
+        "dep": f"{random.randint(6,22)}:00",
+        "arr": f"{random.randint(8,23)}:00"
+    })
+
+return {"flights": flights}
 
 # -----------------------------
 # 📅 КАЛЕНДАРЬ ЦЕН
