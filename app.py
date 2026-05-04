@@ -108,31 +108,30 @@ def get_flights():
     except:
         pass
 
-    conn.close()
+        conn.close()
 
-    # 🔥 3. FALLBACK (если API не ответил)
-    # 🔥 fallback (ВСЕГДА даёт данные)
-import random
+    # 🔥 fallback (ВСЕГДА работает)
+    import random
 
-base_prices = {
-    "CDG": 180,
-    "FCO": 140,
-    "LHR": 220,
-    "JFK": 450
-}
+    base_prices = {
+        "CDG": 180,
+        "FCO": 140,
+        "LHR": 220,
+        "JFK": 450
+    }
 
-base = base_prices.get(dest, 200)
+    base = base_prices.get(dest, 200)
 
-flights = []
+    flights = []
 
-for i in range(3):
-    flights.append({
-        "price": base + random.randint(-40, 60),
-        "dep": f"{random.randint(6,22)}:00",
-        "arr": f"{random.randint(8,23)}:00"
-    })
+    for i in range(3):
+        flights.append({
+            "price": base + random.randint(-40, 60),
+            "dep": f"{random.randint(6,22)}:00",
+            "arr": f"{random.randint(8,23)}:00"
+        })
 
-return {"flights": flights}
+    return {"flights": flights}
 
 # -----------------------------
 # 📅 КАЛЕНДАРЬ ЦЕН
