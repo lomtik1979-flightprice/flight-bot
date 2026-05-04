@@ -2,12 +2,61 @@
 <html>
 <head>
     <title>Flight Finder</title>
+
     <style>
-        body { background:#0b0f1a; color:white; font-family:Arial; }
-        .container { max-width:900px; margin:auto; padding:20px; }
-        input, button { padding:10px; margin:5px; border-radius:5px; border:none; }
-        button { background:#00d4ff; cursor:pointer; }
-        .card { background:#1a1f2e; padding:15px; margin-top:10px; border-radius:10px; }
+        body {
+            background: #0b0f1a;
+            color: white;
+            font-family: Arial;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        input, button {
+            padding: 12px;
+            margin: 5px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        button {
+            background: #00d4ff;
+            cursor: pointer;
+        }
+
+        .card {
+            background: #1a1f2e;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .cheap { border-left: 5px solid #00ff88; }
+        .mid { border-left: 5px solid orange; }
+        .expensive { border-left: 5px solid red; }
+
+        .topbar {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .quick {
+            margin-top: 20px;
+        }
+
+        .quick button {
+            background: #1f2638;
+        }
+
     </style>
 </head>
 
@@ -17,20 +66,44 @@
 
 <h1>✈️ Flight Finder</h1>
 
-<input id="route" placeholder="TLV-CDG">
-<input id="price" placeholder="Max price (e.g. 500)">
-<button onclick="search()">Search</button>
+<div class="topbar">
+    <input id="route" placeholder="TLV-CDG">
+    <input id="price" placeholder="Max price">
+    <button onclick="search()">Search</button>
+    <a href="/map"><button>🌍 Map</button></a>
+</div>
 
-<a href="/map"><button>🌍 Map</button></a>
+<!-- быстрые маршруты -->
+<div class="quick">
+    <b>🔥 Popular:</b>
+    <button onclick="quick('TLV-CDG')">Paris</button>
+    <button onclick="quick('TLV-FCO')">Rome</button>
+    <button onclick="quick('TLV-LHR')">London</button>
+    <button onclick="quick('TLV-JFK')">New York</button>
+</div>
 
 <div id="results"></div>
 
 </div>
 
 <script>
+
+function quick(route) {
+    document.getElementById("route").value = route;
+    search();
+}
+
+function getClass(price) {
+    if (price < 200) return "cheap";
+    if (price < 400) return "mid";
+    return "expensive";
+}
+
 async function search() {
     let route = document.getElementById("route").value;
     let price = document.getElementById("price").value;
+
+    document.getElementById("results").innerHTML = "⏳ Loading...";
 
     const res = await fetch(`/api/flights?route=${route}&max_price=${price}`);
     const data = await res.json();
@@ -38,13 +111,13 @@ async function search() {
     let html = "";
 
     if (data.flights.length === 0) {
-        html = "<p>No flights found</p>";
+        html = "<p>❌ No flights found</p>";
     } else {
         data.flights.forEach(f => {
             html += `
-            <div class="card">
-                💰 $${f.price}<br>
-                🕐 ${f.dep} → ${f.arr}
+            <div class="card ${getClass(f.price)}">
+                <h3>💰 $${f.price}</h3>
+                <p>🕐 ${f.dep} → ${f.arr}</p>
             </div>
             `;
         });
@@ -52,6 +125,7 @@ async function search() {
 
     document.getElementById("results").innerHTML = html;
 }
+
 </script>
 
 </body>
