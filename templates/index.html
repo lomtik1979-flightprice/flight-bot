@@ -49,10 +49,6 @@
             flex-wrap: wrap;
         }
 
-        .quick {
-            margin-top: 20px;
-        }
-
         .quick button {
             background: #1f2638;
         }
@@ -81,12 +77,14 @@
 </div>
 
 <div id="results"></div>
+
 <h3>📅 Cheap Dates</h3>
 <div id="calendar"></div>
 
 </div>
 
 <script>
+
 function quick(route) {
     document.getElementById("route").value = route;
     search();
@@ -99,48 +97,72 @@ function getClass(price) {
 }
 
 async function search() {
-    let route = document.getElementById("route").value;
+    let route = document.getElementById("route").value.toUpperCase();
     let price = document.getElementById("price").value;
 
     document.getElementById("results").innerHTML = "⏳ Loading...";
 
-    loadCalendar(route);
-    const res = await fetch(`/api/flights?route=${route}&max_price=${price}`);
-    const data = await res.json();
+    try {
+        const res = await fetch(`/api/flights?route=${route}&max_price=${price}`);
+        const data = await res.json();
 
-    let html = "";
+        console.log("API:", data);
 
-    if (data.flights.length === 0) {
-        html = "<p>❌ No flights found</p>";
-    } 
-async function loadCalendar(route) {
-    const res = await fetch(`/api/calendar?route=${route}`);
-    const data = await res.json();
+        if (!data || !data.flights) {
+            document.getElementById("results").innerHTML = "❌ API error";
+            return;
+        }
 
-    let html = "";
+        let html = "";
 
-    data.dates.forEach(d => {
-        html += `
-        <div class="card">
-            📅 ${d.date} — 💰 $${d.price}
-        </div>`;
-    });
+        if (data.flights.length === 0) {
+            html = "<p>❌ No flights found</p>";
+        } else {
+            data.flights.forEach(f => {
+                html += `
+                <div class="card ${getClass(f.price)}">
+                    <h3>💰 $${f.price}</h3>
+                    <p>🕐 ${f.dep} → ${f.arr}</p>
+                </div>
+                `;
+            });
+        }
 
-    document.getElementById("calendar").innerHTML = html;
-}
-else {
-        data.flights.forEach(f => {
-            html += `
-            <div class="card ${getClass(f.price)}">
-                <h3>💰 $${f.price}</h3>
-                <p>🕐 ${f.dep} → ${f.arr}</p>
-            </div>
-            `;
-        });
+        document.getElementById("results").innerHTML = html;
+
+        loadCalendar(route);
+
+    } catch (e) {
+        console.log(e);
+        document.getElementById("results").innerHTML = "❌ Error loading flights";
     }
-
-    document.getElementById("results").innerHTML = html;
 }
+
+async function loadCalendar(route) {
+    try {
+        const res = await fetch(`/api/calendar?route=${route}`);
+        const data = await res.json();
+
+        let html = "";
+
+        if (!data || !data.dates || data.dates.length === 0) {
+            html = "<p>No history yet</p>";
+        } else {
+            data.dates.forEach(d => {
+                html += `
+                <div class="card">
+                    📅 ${d.date} — 💰 $${d.price}
+                </div>`;
+            });
+        }
+
+        document.getElementById("calendar").innerHTML = html;
+
+    } catch (e) {
+        console.log(e);
+    }
+}
+
 </script>
 
 </body>
