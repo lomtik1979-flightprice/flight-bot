@@ -115,9 +115,9 @@ def get_flights():
     except:
         pass
 
-    conn.close()
+     conn.close()
 
-        # 🔥 3. FALLBACK (ВСЕГДА ДАЁТ ДАННЫЕ)
+    # 🔥 FALLBACK (ВСЕГДА ДАЁТ РЕЙСЫ)
 
     base_prices = {
         "CDG": 180,
@@ -144,14 +144,17 @@ def get_flights():
             "arr": dep_date
         })
 
-        # 🔥 СОХРАНЯЕМ В БАЗУ
+        # сохраняем в БД
+        conn = sqlite3.connect("flights.db")
+        c = conn.cursor()
+
         c.execute(
             "INSERT INTO flights VALUES (?, ?, ?)",
             (route, dep_date, price)
         )
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+        conn.close()
 
     return {"flights": flights}
 
