@@ -114,8 +114,7 @@ def get_flights():
 
     except:
         pass
-
-     conn.close()
+    conn.close()
 
     # 🔥 FALLBACK (ВСЕГДА ДАЁТ РЕЙСЫ)
 
@@ -129,6 +128,9 @@ def get_flights():
     base = base_prices.get(dest, 200)
 
     flights = []
+
+    conn = sqlite3.connect("flights.db")
+    c = conn.cursor()
 
     for i in range(5):
 
@@ -145,16 +147,13 @@ def get_flights():
         })
 
         # сохраняем в БД
-        conn = sqlite3.connect("flights.db")
-        c = conn.cursor()
-
         c.execute(
             "INSERT INTO flights VALUES (?, ?, ?)",
             (route, dep_date, price)
         )
 
-        conn.commit()
-        conn.close()
+    conn.commit()
+    conn.close()
 
     return {"flights": flights}
 
