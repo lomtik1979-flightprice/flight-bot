@@ -118,6 +118,7 @@ def get_flights():
     conn.close()
 
     # 🔥 3. FALLBACK (ВСЕГДА ДАЁТ ДАННЫЕ)
+
     base_prices = {
         "CDG": 180,
         "FCO": 140,
@@ -129,12 +130,28 @@ def get_flights():
 
     flights = []
 
-    for i in range(3):
+    for i in range(5):
+
+        price = base + random.randint(-40, 60)
+
+        dep_date = (
+            datetime.now() + timedelta(days=i)
+        ).strftime("%Y-%m-%d")
+
         flights.append({
-            "price": base + random.randint(-40, 60),
-            "dep": f"{random.randint(6,22)}:00",
-            "arr": f"{random.randint(8,23)}:00"
+            "price": price,
+            "dep": dep_date,
+            "arr": dep_date
         })
+
+        # 🔥 СОХРАНЯЕМ В БАЗУ
+        c.execute(
+            "INSERT INTO flights VALUES (?, ?, ?)",
+            (route, dep_date, price)
+        )
+
+    conn.commit()
+    conn.close()
 
     return {"flights": flights}
 
