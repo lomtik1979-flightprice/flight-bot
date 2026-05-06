@@ -139,24 +139,45 @@ async function search() {
 }
 
 async function loadCalendar(route) {
-    try {
-        const res = await fetch(`/api/calendar?route=${route}`);
-        const data = await res.json();
 
-        let html = "";
+    const res = await fetch(`/api/calendar?route=${route}`);
+    const data = await res.json();
 
-        if (!data || !data.dates || data.dates.length === 0) {
-            html = "<p>No history yet</p>";
-        } else {
-            data.dates.forEach(d => {
-                html += `
-                <div class="card">
-                    📅 ${d.date} — 💰 $${d.price}
-                </div>`;
-            });
+    let html = `
+    <table style="
+        width:100%;
+        border-spacing:10px;
+        text-align:center;
+    ">
+    `;
+
+    let i = 0;
+
+    data.dates.forEach(d => {
+
+        if (i % 5 === 0) {
+            html += "<tr>";
         }
 
-        document.getElementById("calendar").innerHTML = html;
+        html += `
+        <td>
+            <div class="card">
+                <h3>${d.date}</h3>
+                <p>💰 $${d.price}</p>
+            </div>
+        </td>
+        `;
+
+        if (i % 5 === 4) {
+            html += "</tr>";
+        }
+
+        i++;
+    });
+
+    html += "</table>";
+
+    document.getElementById("calendar").innerHTML = html;
 
     } catch (e) {
         console.log(e);
