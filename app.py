@@ -117,7 +117,7 @@ def get_flights():
 
     conn.close()
 
-    # 🔥 3. FALLBACK (ВСЕГДА ДАЁТ ДАННЫЕ)
+        # 🔥 3. FALLBACK (ВСЕГДА ДАЁТ ДАННЫЕ)
 
     base_prices = {
         "CDG": 180,
