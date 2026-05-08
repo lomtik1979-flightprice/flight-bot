@@ -1,8 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Flight Finder</title>
 
     <style>
@@ -16,7 +21,7 @@
         }
 
         .search-wrapper {
-            max-width: 1200px;
+            max-width: 1250px;
             margin: auto;
         }
 
@@ -46,9 +51,9 @@
             background: #0d6efd;
             color: white;
             border: none;
-            border-radius: 14px;
-            padding: 22px 30px;
-            font-size: 24px;
+            border-radius: 18px;
+            padding: 22px 40px;
+            font-size: 30px;
             font-weight: bold;
             cursor: pointer;
         }
@@ -57,7 +62,7 @@
             display: flex;
             align-items: center;
             background: white;
-            border-radius: 18px;
+            border-radius: 20px;
             overflow: hidden;
             flex: 1;
         }
@@ -66,12 +71,12 @@
             display: flex;
             flex-direction: column;
             padding: 16px 22px;
-            border-left: 1px solid #dcdcdc;
-            min-width: 150px;
+            border-left: 1px solid #ddd;
+            min-width: 170px;
         }
 
         .field.large {
-            min-width: 260px;
+            min-width: 240px;
         }
 
         .field label {
@@ -84,115 +89,143 @@
         .field input {
             border: none;
             outline: none;
-            font-size: 18px;
+            font-size: 22px;
             color: #222;
             background: transparent;
         }
 
         .swap-btn {
-            width: 54px;
-            height: 54px;
-            min-width: 54px;
+
+            width: 56px;
+            height: 56px;
+            min-width: 56px;
+
             border-radius: 50%;
+
             border: 4px solid #03264a;
+
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
+
+            font-size: 28px;
+
             color: #03264a;
             background: white;
-            margin: 0 -27px;
+
+            margin: 0 -28px;
+
             z-index: 10;
         }
 
         .options-row {
+
             display: flex;
             gap: 30px;
-            margin-top: 14px;
+
+            margin-top: 16px;
+
             padding-right: 10px;
+
+            font-size: 20px;
         }
 
         .options-row label {
+
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 18px;
+            gap: 10px;
         }
 
         .options-row input {
-            width: 18px;
-            height: 18px;
-        }
 
-        .card {
-            background: #14213d;
-            padding: 20px;
-            border-radius: 16px;
-            margin-top: 15px;
-            border-left: 5px solid #00d4ff;
+            width: 20px;
+            height: 20px;
         }
 
         #results {
-            margin-top: 30px;
+
+            margin-top: 40px;
         }
 
-        #calendar {
-            margin-top: 20px;
-        }
+        .card {
 
-        table {
-            width: 100%;
-            border-spacing: 10px;
-        }
-
-        td {
-            vertical-align: top;
-        }
-
-        .calendar-card {
             background: #14213d;
-            border-radius: 14px;
-            padding: 15px;
-            text-align: center;
+
+            padding: 20px;
+
+            border-radius: 18px;
+
+            margin-top: 18px;
+
+            border-left: 6px solid #00d4ff;
         }
 
         .cheap {
-            border-left: 5px solid #00ff88;
+            border-left: 6px solid #00ff88;
         }
 
         .mid {
-            border-left: 5px solid orange;
+            border-left: 6px solid orange;
         }
 
         .expensive {
-            border-left: 5px solid red;
+            border-left: 6px solid red;
+        }
+
+        #calendar {
+
+            margin-top: 30px;
+        }
+
+        table {
+
+            width: 100%;
+            border-spacing: 12px;
+        }
+
+        .calendar-card {
+
+            background: #14213d;
+
+            border-radius: 14px;
+
+            padding: 15px;
+
+            text-align: center;
         }
 
         @media (max-width: 1100px) {
 
             .search-box {
+
                 flex-direction: column;
                 align-items: stretch;
             }
 
             .field {
+
                 border-left: none;
                 border-bottom: 1px solid #ddd;
             }
 
             .swap-btn {
+
                 display: none;
             }
 
             .search-bar {
+
                 flex-direction: column;
             }
 
             .search-btn {
+
                 width: 100%;
             }
 
             .options-row {
+
                 flex-direction: column;
                 gap: 10px;
             }
@@ -220,34 +253,75 @@
 
     <div class="search-bar">
 
-        <button class="search-btn" onclick="search()">
+        <button class="search-btn"
+                onclick="search()">
+
             חיפוש
+
         </button>
 
         <div class="search-box">
 
             <div class="field large">
+
                 <label>מוצא</label>
-                <input id="route" type="text" placeholder="TLV-PAR">
+
+                <input
+                    id="origin"
+                    type="text"
+                    placeholder="TLV"
+                >
+
             </div>
 
             <div class="swap-btn">
                 ⇄
             </div>
 
+            <div class="field large">
+
+                <label>יעד</label>
+
+                <input
+                    id="destination"
+                    type="text"
+                    placeholder="MAD"
+                >
+
+            </div>
+
             <div class="field">
+
                 <label>יציאה</label>
-                <input id="date_from" type="date">
+
+                <input
+                    id="date_from"
+                    type="date"
+                >
+
             </div>
 
             <div class="field">
+
                 <label>חזרה</label>
-                <input id="date_to" type="date">
+
+                <input
+                    id="date_to"
+                    type="date"
+                >
+
             </div>
 
             <div class="field">
+
                 <label>מחיר מקסימלי</label>
-                <input id="price" type="number" placeholder="400">
+
+                <input
+                    id="price"
+                    type="number"
+                    placeholder="300"
+                >
+
             </div>
 
         </div>
@@ -291,12 +365,22 @@ function getClass(price) {
 
 async function search() {
 
-    let route = document.getElementById("route")
+    let origin = document
+        .getElementById("origin")
         .value
         .toUpperCase()
         .trim();
 
-    let price = document.getElementById("price").value;
+    let destination = document
+        .getElementById("destination")
+        .value
+        .toUpperCase()
+        .trim();
+
+    let route = `${origin}-${destination}`;
+
+    let price =
+        document.getElementById("price").value;
 
     let date_from =
         document.getElementById("date_from").value;
@@ -363,9 +447,7 @@ async function loadCalendar(route) {
 
         const data = await res.json();
 
-        let html = `
-        <table>
-        `;
+        let html = "<table>";
 
         let i = 0;
 
