@@ -3,235 +3,308 @@
 
 <head>
 
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Flight Finder</title>
-
-    <style>
-
-        body {
-            background: #03264a;
-            font-family: Arial, sans-serif;
-            color: white;
-            margin: 0;
-            padding: 40px;
-        }
-
-        .search-wrapper {
-            max-width: 1250px;
-            margin: auto;
-        }
-
-        .top-controls {
-            display: flex;
-            justify-content: flex-start;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .mini-select {
-            background: #062d56;
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 10px;
-            padding: 10px 15px;
-            font-size: 15px;
-        }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .search-btn {
-            background: #0d6efd;
-            color: white;
-            border: none;
-            border-radius: 18px;
-            padding: 22px 40px;
-            font-size: 30px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+<meta charset="UTF-8">
 
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            flex: 1;
-        }
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-        .field {
-            display: flex;
-            flex-direction: column;
-            padding: 16px 22px;
-            border-left: 1px solid #ddd;
-            min-width: 170px;
-        }
+<title>Flight Finder</title>
 
-        .field.large {
-            min-width: 240px;
-        }
+<style>
 
-        .field label {
-            color: #333;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
+body {
 
-        .field input {
-            border: none;
-            outline: none;
-            font-size: 22px;
-            color: #222;
-            background: transparent;
-        }
+    background: #03264a;
+    font-family: Arial, sans-serif;
+    color: white;
 
-        .swap-btn {
+    margin: 0;
+    padding: 40px;
+}
 
-            width: 56px;
-            height: 56px;
-            min-width: 56px;
+.search-wrapper {
 
-            border-radius: 50%;
+    max-width: 1350px;
+    margin: auto;
+}
 
-            border: 4px solid #03264a;
+.top-controls {
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+    display: flex;
 
-            font-size: 28px;
+    justify-content: flex-start;
 
-            color: #03264a;
-            background: white;
+    gap: 10px;
 
-            margin: 0 -28px;
+    margin-bottom: 15px;
+}
 
-            z-index: 10;
-        }
+.mini-select {
 
-        .options-row {
+    background: #062d56;
 
-            display: flex;
-            gap: 30px;
+    color: white;
 
-            margin-top: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
 
-            padding-right: 10px;
+    border-radius: 10px;
 
-            font-size: 20px;
-        }
+    padding: 10px 15px;
 
-        .options-row label {
+    font-size: 15px;
+}
 
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+.search-bar {
 
-        .options-row input {
+    display: flex;
 
-            width: 20px;
-            height: 20px;
-        }
+    align-items: center;
 
-        #results {
+    gap: 20px;
+}
 
-            margin-top: 40px;
-        }
+.search-btn {
 
-        .card {
+    background: #0d6efd;
 
-            background: #14213d;
+    color: white;
 
-            padding: 20px;
+    border: none;
 
-            border-radius: 18px;
+    border-radius: 18px;
 
-            margin-top: 18px;
+    padding: 22px 40px;
 
-            border-left: 6px solid #00d4ff;
-        }
+    font-size: 30px;
 
-        .cheap {
-            border-left: 6px solid #00ff88;
-        }
+    font-weight: bold;
 
-        .mid {
-            border-left: 6px solid orange;
-        }
+    cursor: pointer;
+}
 
-        .expensive {
-            border-left: 6px solid red;
-        }
+.search-box {
 
-        #calendar {
+    display: flex;
 
-            margin-top: 30px;
-        }
+    align-items: center;
 
-        table {
+    background: white;
 
-            width: 100%;
-            border-spacing: 12px;
-        }
+    border-radius: 24px;
 
-        .calendar-card {
+    overflow: hidden;
 
-            background: #14213d;
+    flex: 1;
+}
 
-            border-radius: 14px;
+.field {
 
-            padding: 15px;
+    display: flex;
 
-            text-align: center;
-        }
+    flex-direction: column;
 
-        @media (max-width: 1100px) {
+    padding: 18px 24px;
 
-            .search-box {
+    border-left: 1px solid #ddd;
 
-                flex-direction: column;
-                align-items: stretch;
-            }
+    min-width: 180px;
 
-            .field {
+    position: relative;
+}
 
-                border-left: none;
-                border-bottom: 1px solid #ddd;
-            }
+.field.large {
 
-            .swap-btn {
+    min-width: 250px;
+}
 
-                display: none;
-            }
+.field.price-field {
 
-            .search-bar {
+    min-width: 260px;
+}
 
-                flex-direction: column;
-            }
+.field label {
 
-            .search-btn {
+    color: #333;
 
-                width: 100%;
-            }
+    font-size: 15px;
 
-            .options-row {
+    font-weight: bold;
 
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
+    margin-bottom: 8px;
+}
 
-    </style>
+.field input {
+
+    border: none;
+
+    outline: none;
+
+    font-size: 22px;
+
+    color: #222;
+
+    background: transparent;
+
+    width: 100%;
+}
+
+.options-row {
+
+    display: flex;
+
+    gap: 30px;
+
+    margin-top: 16px;
+
+    padding-right: 10px;
+
+    font-size: 20px;
+}
+
+.options-row label {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.options-row input {
+
+    width: 20px;
+
+    height: 20px;
+}
+
+#results {
+
+    margin-top: 40px;
+}
+
+.card {
+
+    background: #14213d;
+
+    padding: 20px;
+
+    border-radius: 18px;
+
+    margin-top: 18px;
+
+    border-left: 6px solid #00d4ff;
+}
+
+.cheap {
+
+    border-left: 6px solid #00ff88;
+}
+
+.mid {
+
+    border-left: 6px solid orange;
+}
+
+.expensive {
+
+    border-left: 6px solid red;
+}
+
+#calendar {
+
+    margin-top: 30px;
+}
+
+table {
+
+    width: 100%;
+
+    border-spacing: 12px;
+}
+
+.calendar-card {
+
+    background: #14213d;
+
+    border-radius: 14px;
+
+    padding: 15px;
+
+    text-align: center;
+}
+
+.autocomplete-box {
+
+    position: absolute;
+
+    top: 90px;
+
+    right: 10px;
+
+    background: white;
+
+    color: black;
+
+    width: 240px;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    z-index: 999;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.autocomplete-item {
+
+    padding: 12px;
+
+    cursor: pointer;
+
+    border-bottom: 1px solid #eee;
+}
+
+.autocomplete-item:hover {
+
+    background: #f2f2f2;
+}
+
+@media (max-width: 1200px) {
+
+    .search-box {
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .field {
+
+        border-left: none;
+
+        border-bottom: 1px solid #ddd;
+    }
+
+    .search-bar {
+
+        flex-direction: column;
+    }
+
+    .search-btn {
+
+        width: 100%;
+    }
+
+    .options-row {
+
+        flex-direction: column;
+
+        gap: 10px;
+    }
+}
+
+</style>
 
 </head>
 
@@ -270,12 +343,12 @@
                     id="origin"
                     type="text"
                     placeholder="TLV"
+                    onkeyup="autocomplete('origin','origin-list')"
                 >
 
-            </div>
+                <div id="origin-list"
+                     class="autocomplete-box"></div>
 
-            <div class="swap-btn">
-                ⇄
             </div>
 
             <div class="field large">
@@ -286,7 +359,11 @@
                     id="destination"
                     type="text"
                     placeholder="MAD"
+                    onkeyup="autocomplete('destination','dest-list')"
                 >
+
+                <div id="dest-list"
+                     class="autocomplete-box"></div>
 
             </div>
 
@@ -312,7 +389,7 @@
 
             </div>
 
-            <div class="field">
+            <div class="field price-field">
 
                 <label>מחיר מקסימלי</label>
 
@@ -353,6 +430,68 @@
 </div>
 
 <script>
+
+const airports = [
+
+    { code: "TLV", city: "Tel Aviv" },
+    { code: "CDG", city: "Paris" },
+    { code: "ORY", city: "Paris" },
+    { code: "MAD", city: "Madrid" },
+    { code: "BCN", city: "Barcelona" },
+    { code: "FCO", city: "Rome" },
+    { code: "LHR", city: "London" },
+    { code: "ATH", city: "Athens" },
+    { code: "JFK", city: "New York" }
+
+];
+
+function autocomplete(inputId, listId) {
+
+    let value = document
+        .getElementById(inputId)
+        .value
+        .toUpperCase();
+
+    let box =
+        document.getElementById(listId);
+
+    box.innerHTML = "";
+
+    if (value.length < 1) {
+        return;
+    }
+
+    airports.forEach(a => {
+
+        if (
+            a.code.includes(value) ||
+            a.city.toUpperCase().includes(value)
+        ) {
+
+            box.innerHTML += `
+            <div class="autocomplete-item"
+                onclick="selectAirport(
+                    '${inputId}',
+                    '${listId}',
+                    '${a.code}'
+                )">
+
+                ${a.code} - ${a.city}
+
+            </div>
+            `;
+        }
+    });
+}
+
+function selectAirport(inputId, listId, code) {
+
+    document.getElementById(inputId).value =
+        code;
+
+    document.getElementById(listId).innerHTML =
+        "";
+}
 
 function getClass(price) {
 
@@ -414,9 +553,7 @@ async function search() {
 
                     <h3>💰 $${f.price}</h3>
 
-                    <p>
-                        📅 ${f.dep}
-                    </p>
+                    <p>📅 ${f.dep}</p>
 
                 </div>
                 `;
