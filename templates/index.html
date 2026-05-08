@@ -62,10 +62,21 @@
 <h1>✈️ Flight Finder</h1>
 
 <div class="topbar">
+
     <input id="route" placeholder="TLV-CDG">
+
+    <input type="date" id="date_from">
+
+    <input type="date" id="date_to">
+
     <input id="price" placeholder="Max price">
+
     <button onclick="search()">Search</button>
-    <a href="/map"><button>🌍 Map</button></a>
+
+    <a href="/map">
+        <button>🌍 Map</button>
+    </a>
+
 </div>
 
 <div class="quick">
@@ -97,36 +108,49 @@ function getClass(price) {
 }
 
 async function search() {
+
     let route = document.getElementById("route").value.toUpperCase();
+
     let price = document.getElementById("price").value;
+
+    let date_from = document.getElementById("date_from").value;
+
+    let date_to = document.getElementById("date_to").value;
 
     document.getElementById("results").innerHTML = "⏳ Loading...";
 
     try {
-        const res = await fetch(`/api/flights?route=${route}&max_price=${price}`);
+
+        const res = await fetch(
+            `/api/flights?route=${route}&max_price=${price}&date_from=${date_from}&date_to=${date_to}`
+        );
+
         const data = await res.json();
-
-        console.log("API:", data);
-
-        if (!data || !data.flights) {
-            document.getElementById("results").innerHTML = "❌ API error";
-            return;
-        }
 
         let html = "";
 
-        if (data.flights.length === 0) {
-            html = "<p>❌ No flights found</p>";
-        } else {
-            data.flights.forEach(f => {
-                html += `
-                <div class="card ${getClass(f.price)}">
-                    <h3>💰 $${f.price}</h3>
-                    <p>🕐 ${f.dep} → ${f.arr}</p>
-                </div>
-                `;
-            });
-        }
+        data.flights.forEach(f => {
+
+            html += `
+            <div class="card ${getClass(f.price)}">
+                <h3>💰 $${f.price}</h3>
+                <p>🕐 ${f.dep} → ${f.arr}</p>
+            </div>
+            `;
+        });
+
+        document.getElementById("results").innerHTML = html;
+
+        loadCalendar(route);
+
+    } catch (e) {
+
+        console.log(e);
+
+        document.getElementById("results").innerHTML =
+            "❌ Error loading flights";
+    }
+}
 
         document.getElementById("results").innerHTML = html;
 
