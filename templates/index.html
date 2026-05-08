@@ -304,6 +304,41 @@ table {
     }
 }
 
+.autocomplete-box {
+
+    position: absolute;
+
+    background: white;
+
+    color: black;
+
+    width: 240px;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    z-index: 999;
+
+    margin-top: 8px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.autocomplete-item {
+
+    padding: 12px;
+
+    cursor: pointer;
+
+    border-bottom: 1px solid #eee;
+}
+
+.autocomplete-item:hover {
+
+    background: #f2f2f2;
+}
+
 </style>
 
 </head>
@@ -428,6 +463,55 @@ table {
     <div id="calendar"></div>
 
 </div>
+
+<script src="/static/airports.js"></script>
+function autocomplete(inputId, listId) {
+
+    let value = document
+        .getElementById(inputId)
+        .value
+        .toUpperCase();
+
+    let box =
+        document.getElementById(listId);
+
+    box.innerHTML = "";
+
+    if (value.length < 1) {
+        return;
+    }
+
+    airports.forEach(a => {
+
+        if (
+            a.code.includes(value) ||
+            a.city.toUpperCase().includes(value)
+        ) {
+
+            box.innerHTML += `
+            <div class="autocomplete-item"
+                onclick="selectAirport(
+                    '${inputId}',
+                    '${listId}',
+                    '${a.code}'
+                )">
+
+                ${a.flag} ${a.code} - ${a.city}
+
+            </div>
+            `;
+        }
+    });
+}
+
+function selectAirport(inputId, listId, code) {
+
+    document.getElementById(inputId).value =
+        code;
+
+    document.getElementById(listId).innerHTML =
+        "";
+}
 
 <script>
 
@@ -625,6 +709,8 @@ async function loadCalendar(route) {
         console.log(e);
     }
 }
+
+<script src="/static/airports.js"></script>
 
 </script>
 
