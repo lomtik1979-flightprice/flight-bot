@@ -13,330 +13,199 @@
 <style>
 
 body {
-
     background: #03264a;
     font-family: Arial, sans-serif;
     color: white;
-
     margin: 0;
     padding: 40px;
 }
 
 .search-wrapper {
-
     max-width: 1350px;
     margin: auto;
 }
 
 .top-controls {
-
     display: flex;
-
     justify-content: flex-start;
-
     gap: 10px;
-
     margin-bottom: 15px;
 }
 
 .mini-select {
-
     background: #062d56;
-
     color: white;
-
     border: 1px solid rgba(255,255,255,0.2);
-
     border-radius: 10px;
-
     padding: 10px 15px;
-
     font-size: 15px;
 }
 
 .search-bar {
-
     display: flex;
-
     align-items: center;
-
     gap: 20px;
 }
 
 .search-btn {
-
     background: #0d6efd;
-
     color: white;
-
     border: none;
-
     border-radius: 18px;
-
     padding: 22px 40px;
-
     font-size: 30px;
-
     font-weight: bold;
-
     cursor: pointer;
 }
 
 .search-box {
-
     display: flex;
-
     align-items: center;
-
     background: white;
-
     border-radius: 24px;
-
-    overflow: hidden;
-
+    overflow: visible;
     flex: 1;
 }
 
 .field {
-
     display: flex;
-
     flex-direction: column;
-
     padding: 18px 24px;
-
     border-left: 1px solid #ddd;
-
     min-width: 180px;
-
     position: relative;
 }
 
 .field.large {
-
     min-width: 250px;
 }
 
 .field.price-field {
-
     min-width: 260px;
 }
 
 .field label {
-
     color: #333;
-
     font-size: 15px;
-
     font-weight: bold;
-
     margin-bottom: 8px;
 }
 
 .field input {
-
     border: none;
-
     outline: none;
-
     font-size: 22px;
-
     color: #222;
-
     background: transparent;
-
     width: 100%;
 }
 
 .options-row {
-
     display: flex;
-
     gap: 30px;
-
     margin-top: 16px;
-
     padding-right: 10px;
-
     font-size: 20px;
 }
 
 .options-row label {
-
     display: flex;
-
     align-items: center;
-
     gap: 10px;
 }
 
 .options-row input {
-
     width: 20px;
-
     height: 20px;
 }
 
 #results {
-
     margin-top: 40px;
 }
 
 .card {
-
     background: #14213d;
-
     padding: 20px;
-
     border-radius: 18px;
-
     margin-top: 18px;
-
     border-left: 6px solid #00d4ff;
 }
 
 .cheap {
-
     border-left: 6px solid #00ff88;
 }
 
 .mid {
-
     border-left: 6px solid orange;
 }
 
 .expensive {
-
     border-left: 6px solid red;
 }
 
 #calendar {
-
     margin-top: 30px;
 }
 
 table {
-
     width: 100%;
-
     border-spacing: 12px;
 }
 
 .calendar-card {
-
     background: #14213d;
-
     border-radius: 14px;
-
     padding: 15px;
-
     text-align: center;
 }
 
 .autocomplete-box {
-
     position: absolute;
-
-    top: 90px;
-
-    right: 10px;
-
+    top: 95px;
+    right: 0;
     background: white;
-
     color: black;
-
-    width: 240px;
-
+    width: 250px;
     border-radius: 10px;
-
     overflow: hidden;
-
     z-index: 999;
-
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .autocomplete-item {
-
     padding: 12px;
-
     cursor: pointer;
-
     border-bottom: 1px solid #eee;
 }
 
 .autocomplete-item:hover {
-
     background: #f2f2f2;
 }
 
 @media (max-width: 1200px) {
 
     .search-box {
-
         flex-direction: column;
-
         align-items: stretch;
     }
 
     .field {
-
         border-left: none;
-
         border-bottom: 1px solid #ddd;
     }
 
     .search-bar {
-
         flex-direction: column;
     }
 
     .search-btn {
-
         width: 100%;
     }
 
     .options-row {
-
         flex-direction: column;
-
         gap: 10px;
     }
-}
-
-.autocomplete-box {
-
-    position: absolute;
-
-    background: white;
-
-    color: black;
-
-    width: 240px;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-
-    z-index: 999;
-
-    margin-top: 8px;
-
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.autocomplete-item {
-
-    padding: 12px;
-
-    cursor: pointer;
-
-    border-bottom: 1px solid #eee;
-}
-
-.autocomplete-item:hover {
-
-    background: #f2f2f2;
 }
 
 </style>
@@ -465,70 +334,9 @@ table {
 </div>
 
 <script src="/static/airports.js"></script>
-function autocomplete(inputId, listId) {
-
-    let value = document
-        .getElementById(inputId)
-        .value
-        .toUpperCase();
-
-    let box =
-        document.getElementById(listId);
-
-    box.innerHTML = "";
-
-    if (value.length < 1) {
-        return;
-    }
-
-    airports.forEach(a => {
-
-        if (
-            a.code.includes(value) ||
-            a.city.toUpperCase().includes(value)
-        ) {
-
-            box.innerHTML += `
-            <div class="autocomplete-item"
-                onclick="selectAirport(
-                    '${inputId}',
-                    '${listId}',
-                    '${a.code}'
-                )">
-
-                ${a.flag} ${a.code} - ${a.city}
-
-            </div>
-            `;
-        }
-    });
-}
-
-function selectAirport(inputId, listId, code) {
-
-    document.getElementById(inputId).value =
-        code;
-
-    document.getElementById(listId).innerHTML =
-        "";
-}
 
 <script>
 
-const airports = [
-
-    { code: "TLV", city: "Tel Aviv" },
-    { code: "CDG", city: "Paris" },
-    { code: "ORY", city: "Paris" },
-    { code: "MAD", city: "Madrid" },
-    { code: "BCN", city: "Barcelona" },
-    { code: "FCO", city: "Rome" },
-    { code: "LHR", city: "London" },
-    { code: "ATH", city: "Athens" },
-    { code: "JFK", city: "New York" }
-
-];
-
 function autocomplete(inputId, listId) {
 
     let value = document
@@ -536,8 +344,7 @@ function autocomplete(inputId, listId) {
         .value
         .toUpperCase();
 
-    let box =
-        document.getElementById(listId);
+    let box = document.getElementById(listId);
 
     box.innerHTML = "";
 
@@ -553,16 +360,16 @@ function autocomplete(inputId, listId) {
         ) {
 
             box.innerHTML += `
-            <div class="autocomplete-item"
-                onclick="selectAirport(
-                    '${inputId}',
-                    '${listId}',
-                    '${a.code}'
-                )">
+                <div class="autocomplete-item"
+                    onclick="selectAirport(
+                        '${inputId}',
+                        '${listId}',
+                        '${a.code}'
+                    )">
 
-                ${a.code} - ${a.city}
+                    ${a.flag} ${a.code} - ${a.city}
 
-            </div>
+                </div>
             `;
         }
     });
@@ -570,11 +377,9 @@ function autocomplete(inputId, listId) {
 
 function selectAirport(inputId, listId, code) {
 
-    document.getElementById(inputId).value =
-        code;
+    document.getElementById(inputId).value = code;
 
-    document.getElementById(listId).innerHTML =
-        "";
+    document.getElementById(listId).innerHTML = "";
 }
 
 function getClass(price) {
@@ -624,7 +429,7 @@ async function search() {
 
         let html = "";
 
-        if (data.flights.length === 0) {
+        if (!data.flights || data.flights.length === 0) {
 
             html = "<p>❌ No flights found</p>";
 
@@ -633,13 +438,39 @@ async function search() {
             data.flights.forEach(f => {
 
                 html += `
+
                 <div class="card ${getClass(f.price)}">
 
-                    <h3>💰 $${f.price}</h3>
+                    <img
+                        src="/static/cities/paris.jpg"
+                        style="
+                        width:100%;
+                        height:180px;
+                        object-fit:cover;
+                        border-radius:14px;
+                        margin-bottom:15px;
+                        "
+                    >
+
+                    <div style="
+                    display:flex;
+                    align-items:center;
+                    gap:15px;
+                    ">
+
+                        <img
+                            src="/static/logos/elal.png"
+                            width="60"
+                        >
+
+                        <h3>💰 $${f.price}</h3>
+
+                    </div>
 
                     <p>📅 ${f.dep}</p>
 
                 </div>
+
                 `;
             });
         }
@@ -654,7 +485,7 @@ async function search() {
         console.log(e);
 
         document.getElementById("results").innerHTML =
-            "❌ Error";
+            "❌ Error loading flights";
     }
 }
 
@@ -679,17 +510,17 @@ async function loadCalendar(route) {
             }
 
             html += `
-            <td>
+                <td>
 
-                <div class="calendar-card">
+                    <div class="calendar-card">
 
-                    <h3>${d.date}</h3>
+                        <h3>${d.date}</h3>
 
-                    <p>💰 $${d.price}</p>
+                        <p>💰 $${d.price}</p>
 
-                </div>
+                    </div>
 
-            </td>
+                </td>
             `;
 
             if (i % 5 === 4) {
@@ -709,8 +540,6 @@ async function loadCalendar(route) {
         console.log(e);
     }
 }
-
-<script src="/static/airports.js"></script>
 
 </script>
 
