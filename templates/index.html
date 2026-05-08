@@ -1,109 +1,291 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flight Finder</title>
 
     <style>
+
         body {
-            background: #0b0f1a;
+            background: #03264a;
+            font-family: Arial, sans-serif;
             color: white;
-            font-family: Arial;
+            margin: 0;
+            padding: 40px;
         }
 
-        .container {
-            max-width: 1000px;
+        .search-wrapper {
+            max-width: 1200px;
             margin: auto;
-            padding: 20px;
         }
 
-        input, button {
-            padding: 12px;
-            margin: 5px;
-            border-radius: 8px;
+        .top-controls {
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .mini-select {
+            background: #062d56;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-size: 15px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-btn {
+            background: #0d6efd;
+            color: white;
             border: none;
-        }
-
-        button {
-            background: #00d4ff;
+            border-radius: 14px;
+            padding: 22px 30px;
+            font-size: 24px;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        .card {
-            background: #1a1f2e;
-            padding: 15px;
-            margin-top: 10px;
-            border-radius: 12px;
-            transition: 0.2s;
-        }
-
-        .card:hover {
-            transform: scale(1.02);
-        }
-
-        .cheap { border-left: 5px solid #00ff88; }
-        .mid { border-left: 5px solid orange; }
-        .expensive { border-left: 5px solid red; }
-
-        .topbar {
+        .search-box {
             display: flex;
-            flex-wrap: wrap;
+            align-items: center;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            flex: 1;
         }
 
-        .quick button {
-            background: #1f2638;
+        .field {
+            display: flex;
+            flex-direction: column;
+            padding: 16px 22px;
+            border-left: 1px solid #dcdcdc;
+            min-width: 150px;
         }
+
+        .field.large {
+            min-width: 260px;
+        }
+
+        .field label {
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .field input {
+            border: none;
+            outline: none;
+            font-size: 18px;
+            color: #222;
+            background: transparent;
+        }
+
+        .swap-btn {
+            width: 54px;
+            height: 54px;
+            min-width: 54px;
+            border-radius: 50%;
+            border: 4px solid #03264a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: #03264a;
+            background: white;
+            margin: 0 -27px;
+            z-index: 10;
+        }
+
+        .options-row {
+            display: flex;
+            gap: 30px;
+            margin-top: 14px;
+            padding-right: 10px;
+        }
+
+        .options-row label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+        }
+
+        .options-row input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .card {
+            background: #14213d;
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 15px;
+            border-left: 5px solid #00d4ff;
+        }
+
+        #results {
+            margin-top: 30px;
+        }
+
+        #calendar {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-spacing: 10px;
+        }
+
+        td {
+            vertical-align: top;
+        }
+
+        .calendar-card {
+            background: #14213d;
+            border-radius: 14px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .cheap {
+            border-left: 5px solid #00ff88;
+        }
+
+        .mid {
+            border-left: 5px solid orange;
+        }
+
+        .expensive {
+            border-left: 5px solid red;
+        }
+
+        @media (max-width: 1100px) {
+
+            .search-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .field {
+                border-left: none;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .swap-btn {
+                display: none;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .search-btn {
+                width: 100%;
+            }
+
+            .options-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
     </style>
+
 </head>
 
 <body>
 
-<div class="container">
+<div class="search-wrapper" dir="rtl">
 
-<h1>✈️ Flight Finder</h1>
+    <div class="top-controls">
 
-<div class="topbar">
+        <select class="mini-select">
+            <option>הלוך־חזור</option>
+        </select>
 
-    <input id="route" placeholder="TLV-CDG">
+        <select class="mini-select">
+            <option>תיירים</option>
+        </select>
 
-    <input type="date" id="date_from">
+    </div>
 
-    <input type="date" id="date_to">
+    <div class="search-bar">
 
-    <input id="price" placeholder="Max price">
+        <button class="search-btn" onclick="search()">
+            חיפוש
+        </button>
 
-    <button onclick="search()">Search</button>
+        <div class="search-box">
 
-    <a href="/map">
-        <button>🌍 Map</button>
-    </a>
+            <div class="field large">
+                <label>מוצא</label>
+                <input id="route" type="text" placeholder="TLV-PAR">
+            </div>
 
-</div>
+            <div class="swap-btn">
+                ⇄
+            </div>
 
-<div class="quick">
-    <b>🔥 Popular:</b>
-    <button onclick="quick('TLV-CDG')">Paris</button>
-    <button onclick="quick('TLV-FCO')">Rome</button>
-    <button onclick="quick('TLV-LHR')">London</button>
-    <button onclick="quick('TLV-JFK')">New York</button>
-</div>
+            <div class="field">
+                <label>יציאה</label>
+                <input id="date_from" type="date">
+            </div>
 
-<div id="results"></div>
+            <div class="field">
+                <label>חזרה</label>
+                <input id="date_to" type="date">
+            </div>
 
-<h3>📅 Cheap Dates</h3>
-<div id="calendar"></div>
+            <div class="field">
+                <label>מחיר מקסימלי</label>
+                <input id="price" type="number" placeholder="400">
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="options-row">
+
+        <label>
+            <input type="checkbox" checked>
+            טיסות ישירות בלבד
+        </label>
+
+        <label>
+            <input type="checkbox">
+            חברות ישראליות בלבד
+        </label>
+
+    </div>
+
+    <div id="results"></div>
+
+    <h2 style="margin-top:40px;">
+        📅 Cheap Dates
+    </h2>
+
+    <div id="calendar"></div>
 
 </div>
 
 <script>
 
-function quick(route) {
-    document.getElementById("route").value = route;
-    search();
-}
-
 function getClass(price) {
+
     if (price < 200) return "cheap";
+
     if (price < 400) return "mid";
+
     return "expensive";
 }
 
@@ -171,29 +353,18 @@ async function search() {
     }
 }
 
-        document.getElementById("results").innerHTML = html;
-
-        loadCalendar(route);
-
-    } catch (e) {
-        console.log(e);
-        document.getElementById("results").innerHTML = "❌ Error loading flights";
-    }
-}
-
 async function loadCalendar(route) {
 
     try {
 
-        const res = await fetch(`/api/calendar?route=${route}`);
+        const res = await fetch(
+            `/api/calendar?route=${route}`
+        );
+
         const data = await res.json();
 
         let html = `
-        <table style="
-            width:100%;
-            border-spacing:10px;
-            text-align:center;
-        ">
+        <table>
         `;
 
         let i = 0;
@@ -206,10 +377,15 @@ async function loadCalendar(route) {
 
             html += `
             <td>
-                <div class="card">
+
+                <div class="calendar-card">
+
                     <h3>${d.date}</h3>
+
                     <p>💰 $${d.price}</p>
+
                 </div>
+
             </td>
             `;
 
@@ -222,9 +398,11 @@ async function loadCalendar(route) {
 
         html += "</table>";
 
-        document.getElementById("calendar").innerHTML = html;
+        document.getElementById("calendar").innerHTML =
+            html;
 
-        } catch (e) {
+    } catch (e) {
+
         console.log(e);
     }
 }
