@@ -86,6 +86,8 @@ def get_flights():
 
         days = (d2 - d1).days + 1
 
+        days = min(days, 60)
+
     except:
         d1 = datetime.now()
         days = 30
@@ -104,6 +106,12 @@ def get_flights():
 
     conn = sqlite3.connect("flights.db")
     c = conn.cursor()
+
+    # удаляем старые данные маршрута
+    c.execute(
+    "DELETE FROM flights WHERE route=?",
+    (route,)
+)
 
     for i in range(days):
 
