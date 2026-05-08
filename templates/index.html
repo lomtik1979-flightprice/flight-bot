@@ -109,15 +109,21 @@ function getClass(price) {
 
 async function search() {
 
-    let route = document.getElementById("route").value.toUpperCase();
+    let route = document.getElementById("route")
+        .value
+        .toUpperCase()
+        .trim();
 
     let price = document.getElementById("price").value;
 
-    let date_from = document.getElementById("date_from").value;
+    let date_from =
+        document.getElementById("date_from").value;
 
-    let date_to = document.getElementById("date_to").value;
+    let date_to =
+        document.getElementById("date_to").value;
 
-    document.getElementById("results").innerHTML = "⏳ Loading...";
+    document.getElementById("results").innerHTML =
+        "⏳ Loading...";
 
     try {
 
@@ -129,17 +135,30 @@ async function search() {
 
         let html = "";
 
-        data.flights.forEach(f => {
+        if (data.flights.length === 0) {
 
-            html += `
-            <div class="card ${getClass(f.price)}">
-                <h3>💰 $${f.price}</h3>
-                <p>🕐 ${f.dep} → ${f.arr}</p>
-            </div>
-            `;
-        });
+            html = "<p>❌ No flights found</p>";
 
-        document.getElementById("results").innerHTML = html;
+        } else {
+
+            data.flights.forEach(f => {
+
+                html += `
+                <div class="card ${getClass(f.price)}">
+
+                    <h3>💰 $${f.price}</h3>
+
+                    <p>
+                        📅 ${f.dep}
+                    </p>
+
+                </div>
+                `;
+            });
+        }
+
+        document.getElementById("results").innerHTML =
+            html;
 
         loadCalendar(route);
 
@@ -148,7 +167,7 @@ async function search() {
         console.log(e);
 
         document.getElementById("results").innerHTML =
-            "❌ Error loading flights";
+            "❌ Error";
     }
 }
 

@@ -7,11 +7,13 @@ import random
 app = Flask(__name__)
 
 # -----------------------------
-# 🧠 ИНИЦИАЛИЗАЦИЯ БАЗЫ
+# БАЗА
 # -----------------------------
 def init_db():
+
     conn = sqlite3.connect("flights.db")
     c = conn.cursor()
+
     c.execute("""
         CREATE TABLE IF NOT EXISTS flights (
             route TEXT,
@@ -19,105 +21,76 @@ def init_db():
             price INTEGER
         )
     """)
+
     conn.commit()
     conn.close()
 
 init_db()
 
 # -----------------------------
-# 🏠 ГЛАВНАЯ СТРАНИЦА
+# ГЛАВНАЯ
 # -----------------------------
 @app.route("/")
 def index():
     return render_template("index.html")
 
 # -----------------------------
-# 🌍 КАРТА
+# КАРТА
 # -----------------------------
 @app.route("/map")
 def map_view():
     return render_template("map.html")
 
 # -----------------------------
-# ✈️ API РЕЙСОВ
+# API РЕЙСОВ
 # -----------------------------
 @app.route("/api/flights")
 def get_flights():
+
     route = request.args.get("route")
+    max_price = request.args.get("max_price")
+
+    date_from = request.args.get("date_from")
+    date_to = request.args.get("date_to")
 
     if not route:
         return {"flights": []}
+
+    route = route.upper().strip()
 
     try:
         origin, dest = route.split("-")
     except:
         return {"flights": []}
 
-    conn = sqlite3.connect("flights.db")
-    c = conn.cursor()
+    # aliases
+    aliases = {
+        "PAR": "CDG",
+        "ROM": "FCO",
+        "LON": "LHR",
+        "NYC": "JFK"
+    }
 
-    # 🔥 1. ПРОБУЕМ КЕШ
-    c.execute("SELECT price, date FROM flights WHERE route=?", (route,))
-    rows = c.fetchall()
+    dest = aliases.get(dest, dest)
 
-    if rows:
-        conn.close()
-        return {
-            "flights": [
-                {"price": r[0], "dep": r[1], "arr": r[1]}
-                for r in rows[:5]
-            ]
-        }
-
-    # 🔥 2. ПРОБУЕМ API
+    # max price
     try:
-        res = requests.get(
-            "https://api.skypicker.com/flights",
-            params={
-                "fly_from": origin,
-                "fly_to": dest,
-                "date_from": datetime.now().strftime("%d/%m/%Y"),
-                "date_to": (datetime.now() + timedelta(days=30)).strftime("%d/%m/%Y"),
-                "curr": "USD",
-                "limit": 5
-            },
-            headers={"User-Agent": "Mozilla/5.0"},
-            timeout=10
-        )
+        max_price = int(max_price)
+    except:
+        max_price = 99999
 
-        if res.status_code == 200:
-            data = res.json().get("data", [])
+    # даты
+    try:
+        d1 = datetime.strptime(date_from, "%Y-%m-%d")
+        d2 = datetime.strptime(date_to, "%Y-%m-%d")
 
-            flights = []
-
-            for f in data:
-                seg = f["route"][0]
-                price = f["price"]
-
-                flights.append({
-                    "price": price,
-                    "dep": seg["local_departure"][:16],
-                    "arr": seg["local_arrival"][:16]
-                })
-
-                # сохраняем в БД
-                c.execute(
-                    "INSERT INTO flights VALUES (?, ?, ?)",
-                    (route, seg["local_departure"][:10], price)
-                )
-
-            conn.commit()
-            conn.close()
-
-            if flights:
-                return {"flights": flights}
+        days = (d2 - d1).days + 1
 
     except:
-        pass
-    conn.close()
+        d1 = datetime.now()
+        days = 30
 
-    # 🔥 FALLBACK (ВСЕГДА ДАЁТ РЕЙСЫ)
-
+    # fallback prices
     base_prices = {
         "CDG": 180,
         "FCO": 140,
@@ -132,13 +105,16 @@ def get_flights():
     conn = sqlite3.connect("flights.db")
     c = conn.cursor()
 
-    for i in range(5):
+    for i in range(days):
+
+        dep_date = (
+            d1 + timedelta(days=i)
+        ).strftime("%Y-%m-%d")
 
         price = base + random.randint(-40, 60)
 
-        dep_date = (
-            datetime.now() + timedelta(days=i)
-        ).strftime("%Y-%m-%d")
+        if price > max_price:
+            continue
 
         flights.append({
             "price": price,
@@ -146,7 +122,7 @@ def get_flights():
             "arr": dep_date
         })
 
-        # сохраняем в БД
+        # сохраняем
         c.execute(
             "INSERT INTO flights VALUES (?, ?, ?)",
             (route, dep_date, price)
@@ -157,12 +133,12 @@ def get_flights():
 
     return {"flights": flights}
 
-
 # -----------------------------
-# 📅 КАЛЕНДАРЬ
+# КАЛЕНДАРЬ
 # -----------------------------
 @app.route("/api/calendar")
 def calendar():
+
     route = request.args.get("route")
 
     if not route:
@@ -176,18 +152,25 @@ def calendar():
         FROM flights
         WHERE route=?
         GROUP BY date
-    """, (route,))
+        ORDER BY date
+    """, (route.upper(),))
 
     rows = c.fetchall()
+
     conn.close()
 
     return {
-        "dates": [{"date": r[0], "price": r[1]} for r in rows]
+        "dates": [
+            {
+                "date": r[0],
+                "price": r[1]
+            }
+            for r in rows
+        ]
     }
 
-
 # -----------------------------
-# 🚀 ЗАПУСК
+# START
 # -----------------------------
 if __name__ == "__main__":
     app.run()
