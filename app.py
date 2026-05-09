@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import sqlite3
 import requests
+from serpapi import GoogleSearch
 from datetime import datetime, timedelta
 import random
 
@@ -48,118 +49,70 @@ def map_view():
 def get_flights():
 
     route = request.args.get("route")
-    max_price = request.args.get("max_price")
-
-    date_from = request.args.get("date_from")
-    date_to = request.args.get("date_to")
 
     if not route:
         return {"flights": []}
 
-    route = route.upper().strip()
-
-   try:
-    origin, dest = route.split("-")
-except:
-    return {"flights": []}
-
-valid_airports = [
-
-    "TLV",
-    "CDG",
-    "MAD",
-    "FCO",
-    "BCN",
-    "LHR",
-    "ATH",
-    "JFK"
-]
-
-if origin not in valid_airports:
-    return {"flights": []}
-
-if dest not in valid_airports:
-    return {"flights": []}
+    try:
+        origin, dest = route.split("-")
     except:
         return {"flights": []}
 
-    # aliases
-    aliases = {
-        "PAR": "CDG",
-        "ROM": "FCO",
-        "LON": "LHR",
-        "NYC": "JFK"
+    date_from = request.args.get("date_from")
+    date_to = request.args.get("date_to")
+
+    params = {
+
+        "engine": "google_flights",
+
+        "departure_id": origin,
+
+        "arrival_id": dest,
+
+        "outbound_date": date_from,
+
+        "return_date": date_to,
+
+        "currency": "USD",
+
+        "hl": "en",
+
+        "api_key": "26e06478b4b9a2349b9f9373c8ec8f3c7de19e56fa5bb93771a6a741634e51db"
     }
 
-    dest = aliases.get(dest, dest)
-
-    # max price
     try:
-        max_price = int(max_price)
-    except:
-        max_price = 99999
 
-    # даты
-    try:
-        d1 = datetime.strptime(date_from, "%Y-%m-%d")
-        d2 = datetime.strptime(date_to, "%Y-%m-%d")
+        search = GoogleSearch(params)
 
-        days = (d2 - d1).days + 1
+        results = search.get_dict()
 
-        days = min(days, 60)
-
-    except:
-        d1 = datetime.now()
-        days = 30
-
-    # fallback prices
-    base_prices = {
-        "CDG": 180,
-        "FCO": 140,
-        "LHR": 220,
-        "JFK": 450
-    }
-
-    base = base_prices.get(dest, 200)
-
-    flights = []
-
-    conn = sqlite3.connect("flights.db")
-    c = conn.cursor()
-
-    # удаляем старые данные маршрута
-    c.execute(
-    "DELETE FROM flights WHERE route=?",
-    (route,)
-)
-
-    for i in range(days):
-
-        dep_date = (
-            d1 + timedelta(days=i)
-        ).strftime("%Y-%m-%d")
-
-        price = base + random.randint(-40, 60)
-
-        if price > max_price:
-            continue
-
-        flights.append({
-            "price": price,
-            "dep": dep_date,
-            "arr": dep_date
-        })
-
-        # сохраняем
-        c.execute(
-            "INSERT INTO flights VALUES (?, ?, ?)",
-            (route, dep_date, price)
+        best_flights = results.get(
+            "best_flights",
+            []
         )
 
-    conn.commit()
-    conn.close()
+        flights = []
 
-    return {"flights": flights}
+        for f in best_flights:
+
+            price = f.get("price", 0)
+
+            flights.append({
+
+                "price": price,
+
+                "dep": date_from,
+
+                "arr": date_to
+            })
+
+        return {"flights": flights}
+
+    except Exception as e:
+
+        print(e)
+
+        return {"flights": []}
 
 # -----------------------------
 # КАЛЕНДАРЬ
