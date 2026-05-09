@@ -139,31 +139,39 @@ table {
 
         <div class="field">
 
-            <input
-                id="date_from"
-                type="date"
+    <label>From</label>
+
+           <input
+               id="date_from"
+               type="date"
+               lang="en"
             >
 
-        </div>
+            </div>
 
-        <div class="field">
+             <div class="field">
 
-            <input
-                id="date_to"
-                type="date"
+    <label>To</label>
+
+              <input
+                  id="date_to"
+                  type="date"
+                  lang="en"
             >
 
-        </div>
+          </div>
 
-        <button
-            class="search-btn"
-            onclick="search()">
+            <div class="field">
 
-            Search
+    <label>Max Price</label>
 
-        </button>
+             <input
+                 id="max_price"
+                 type="number"
+                 placeholder="500"
+            >
 
-    </div>
+           </div>
 
     <div id="results"></div>
 
@@ -249,6 +257,10 @@ async function search() {
         .toUpperCase();
 
     let route =
+        let max_price =
+    document.getElementById(
+        "max_price"
+    ).value;
         `${origin}-${destination}`;
 
     const res = await fetch(

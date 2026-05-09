@@ -67,6 +67,7 @@ def get_flights():
 
     date_from = request.args.get("date_from")
     date_to = request.args.get("date_to")
+    max_price = request.args.get("max_price")
 
     if not date_from or not date_to:
 
@@ -120,9 +121,24 @@ def get_flights():
 
             price = f.get("price", 0)
 
+            try:
+
+    numeric_price = int(
+        str(price).replace("$", "")
+    )
+
+except:
+
+    numeric_price = 0
+
+if max_price:
+
+    if numeric_price > int(max_price):
+        continue
+
             flights.append({
 
-                "price": price,
+                "price": numeric_price,
 
                 "dep": date_from,
 
