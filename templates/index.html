@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Flight Finder</title>
 
@@ -14,74 +13,58 @@ body {
     background: #03264a;
     color: white;
     font-family: Arial;
-    margin: 0;
     padding: 40px;
 }
 
 .search-wrapper {
-    max-width: 1300px;
+    max-width: 1200px;
     margin: auto;
 }
 
 .search-bar {
     display: flex;
     gap: 20px;
-    align-items: center;
+    margin-bottom: 30px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.field input {
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: none;
+    width: 220px;
 }
 
 .search-btn {
     background: #0d6efd;
     color: white;
     border: none;
-    border-radius: 18px;
-    padding: 20px 35px;
-    font-size: 26px;
-    cursor: pointer;
-}
-
-.search-box {
-    display: flex;
-    background: white;
-    border-radius: 24px;
-    overflow: visible;
-    flex: 1;
-}
-
-.field {
-    display: flex;
-    flex-direction: column;
-    padding: 18px;
-    min-width: 220px;
-    border-left: 1px solid #ddd;
-    position: relative;
-}
-
-.field label {
-    color: #444;
-    margin-bottom: 6px;
-    font-size: 14px;
-}
-
-.field input {
-    border: none;
-    outline: none;
+    border-radius: 12px;
+    padding: 15px 30px;
     font-size: 20px;
+    cursor: pointer;
 }
 
 .card {
     background: #14213d;
+    border-radius: 16px;
     padding: 20px;
-    border-radius: 18px;
     margin-top: 20px;
 }
 
 .autocomplete-box {
     position: absolute;
-    top: 90px;
-    right: 0;
+    top: 70px;
+    left: 0;
+    width: 220px;
     background: white;
     color: black;
-    width: 240px;
     border-radius: 10px;
     overflow: hidden;
     z-index: 999;
@@ -90,23 +73,22 @@ body {
 .autocomplete-item {
     padding: 12px;
     cursor: pointer;
-    border-bottom: 1px solid #eee;
 }
 
 .autocomplete-item:hover {
     background: #f2f2f2;
 }
 
-table {
-    width: 100%;
-    border-spacing: 12px;
-}
-
 .calendar-card {
     background: #14213d;
-    padding: 15px;
     border-radius: 14px;
+    padding: 15px;
     text-align: center;
+}
+
+table {
+    width: 100%;
+    border-spacing: 10px;
 }
 
 </style>
@@ -119,6 +101,60 @@ table {
 
     <div class="search-bar">
 
+        <div class="field">
+
+            <input
+                id="origin"
+                placeholder="TLV"
+                onkeyup="autocomplete(
+                    'origin',
+                    'origin-list'
+                )"
+            >
+
+            <div
+                id="origin-list"
+                class="autocomplete-box">
+            </div>
+
+        </div>
+
+        <div class="field">
+
+            <input
+                id="destination"
+                placeholder="MAD"
+                onkeyup="autocomplete(
+                    'destination',
+                    'dest-list'
+                )"
+            >
+
+            <div
+                id="dest-list"
+                class="autocomplete-box">
+            </div>
+
+        </div>
+
+        <div class="field">
+
+            <input
+                id="date_from"
+                type="date"
+            >
+
+        </div>
+
+        <div class="field">
+
+            <input
+                id="date_to"
+                type="date"
+            >
+
+        </div>
+
         <button
             class="search-btn"
             onclick="search()">
@@ -127,77 +163,11 @@ table {
 
         </button>
 
-        <div class="search-box">
-
-            <div class="field">
-
-                <label>Origin</label>
-
-                <input
-                    id="origin"
-                    placeholder="TLV"
-                    onkeyup="autocomplete(
-                        'origin',
-                        'origin-list'
-                    )"
-                >
-
-                <div
-                    id="origin-list"
-                    class="autocomplete-box">
-                </div>
-
-            </div>
-
-            <div class="field">
-
-                <label>Destination</label>
-
-                <input
-                    id="destination"
-                    placeholder="MAD"
-                    onkeyup="autocomplete(
-                        'destination',
-                        'dest-list'
-                    )"
-                >
-
-                <div
-                    id="dest-list"
-                    class="autocomplete-box">
-                </div>
-
-            </div>
-
-            <div class="field">
-
-                <label>Date From</label>
-
-                <input
-                    id="date_from"
-                    type="date"
-                >
-
-            </div>
-
-            <div class="field">
-
-                <label>Date To</label>
-
-                <input
-                    id="date_to"
-                    type="date"
-                >
-
-            </div>
-
-        </div>
-
     </div>
 
     <div id="results"></div>
 
-    <h2 style="margin-top:40px;">
+    <h2>
         Cheap Dates
     </h2>
 
@@ -281,9 +251,6 @@ async function search() {
     let route =
         `${origin}-${destination}`;
 
-    document.getElementById("results")
-        .innerHTML = "Loading...";
-
     const res = await fetch(
         `/api/flights?route=${route}`
     );
@@ -295,18 +262,11 @@ async function search() {
     let cityImages = {
 
         "CDG": "paris.jpg",
-        "ORY": "paris.jpg",
-
         "MAD": "madrid.jpg",
-
         "FCO": "rome.jpg",
-
         "BCN": "barcelona.jpg",
-
         "LHR": "london.jpg",
-
         "ATH": "athens.jpg",
-
         "JFK": "newyork.jpg"
     };
 
