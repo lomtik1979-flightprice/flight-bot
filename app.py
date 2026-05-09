@@ -81,6 +81,7 @@ def get_flights():
     }
 
     try:
+        print(params)
 
         search = GoogleSearch(params)
 
@@ -110,9 +111,14 @@ def get_flights():
 
     except Exception as e:
 
-        print(e)
+    print("========== SERPAPI ERROR ==========")
+    print(str(e))
+    print("===================================")
 
-        return {"flights": []}
+    return {
+        "error": str(e),
+        "flights": []
+    }
 
 # -----------------------------
 # КАЛЕНДАРЬ
