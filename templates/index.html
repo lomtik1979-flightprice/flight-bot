@@ -435,6 +435,26 @@ async function search() {
 
         } else {
 
+let cityImages = {
+
+    "CDG": "paris.jpg",
+    "ORY": "paris.jpg",
+
+    "MAD": "madrid.jpg",
+
+    "FCO": "rome.jpg",
+
+    "BCN": "barcelona.jpg",
+
+    "LHR": "london.jpg",
+
+    "ATH": "athens.jpg",
+
+    "JFK": "newyork.jpg"
+};
+
+let cityImage =
+    cityImages[destination] || "default.jpg";
             data.flights.forEach(f => {
 
                 html += `
@@ -442,7 +462,7 @@ async function search() {
                 <div class="card ${getClass(f.price)}">
 
                     <img
-                        src="/static/cities/paris.jpg"
+                        src="/static/cities/${cityImage}"
                         style="
                         width:100%;
                         height:180px;

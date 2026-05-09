@@ -60,6 +60,24 @@ def get_flights():
 
     try:
         origin, dest = route.split("-")
+
+valid_airports = [
+    "TLV",
+    "CDG",
+    "ORY",
+    "MAD",
+    "BCN",
+    "FCO",
+    "LHR",
+    "ATH",
+    "JFK"
+]
+
+if origin not in valid_airports:
+    return {"flights": []}
+
+if dest not in valid_airports:
+    return {"flights": []}
     except:
         return {"flights": []}
 
