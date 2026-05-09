@@ -58,16 +58,18 @@ def get_flights():
 
     route = route.upper().strip()
 
-    try:
-        origin, dest = route.split("-")
+   try:
+    origin, dest = route.split("-")
+except:
+    return {"flights": []}
 
 valid_airports = [
+
     "TLV",
     "CDG",
-    "ORY",
     "MAD",
-    "BCN",
     "FCO",
+    "BCN",
     "LHR",
     "ATH",
     "JFK"
