@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Flight Finder</title>
 
@@ -14,37 +12,21 @@
 
 body {
     background: #03264a;
-    font-family: Arial, sans-serif;
     color: white;
+    font-family: Arial;
     margin: 0;
     padding: 40px;
 }
 
 .search-wrapper {
-    max-width: 1350px;
+    max-width: 1300px;
     margin: auto;
-}
-
-.top-controls {
-    display: flex;
-    justify-content: flex-start;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.mini-select {
-    background: #062d56;
-    color: white;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 10px;
-    padding: 10px 15px;
-    font-size: 15px;
 }
 
 .search-bar {
     display: flex;
-    align-items: center;
     gap: 20px;
+    align-items: center;
 }
 
 .search-btn {
@@ -52,15 +34,13 @@ body {
     color: white;
     border: none;
     border-radius: 18px;
-    padding: 22px 40px;
-    font-size: 30px;
-    font-weight: bold;
+    padding: 20px 35px;
+    font-size: 26px;
     cursor: pointer;
 }
 
 .search-box {
     display: flex;
-    align-items: center;
     background: white;
     border-radius: 24px;
     overflow: visible;
@@ -70,106 +50,41 @@ body {
 .field {
     display: flex;
     flex-direction: column;
-    padding: 18px 24px;
+    padding: 18px;
+    min-width: 220px;
     border-left: 1px solid #ddd;
-    min-width: 180px;
     position: relative;
 }
 
-.field.large {
-    min-width: 250px;
-}
-
-.field.price-field {
-    min-width: 260px;
-}
-
 .field label {
-    color: #333;
-    font-size: 15px;
-    font-weight: bold;
-    margin-bottom: 8px;
+    color: #444;
+    margin-bottom: 6px;
+    font-size: 14px;
 }
 
 .field input {
     border: none;
     outline: none;
-    font-size: 22px;
-    color: #222;
-    background: transparent;
-    width: 100%;
-}
-
-.options-row {
-    display: flex;
-    gap: 30px;
-    margin-top: 16px;
-    padding-right: 10px;
     font-size: 20px;
-}
-
-.options-row label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.options-row input {
-    width: 20px;
-    height: 20px;
-}
-
-#results {
-    margin-top: 40px;
 }
 
 .card {
     background: #14213d;
     padding: 20px;
     border-radius: 18px;
-    margin-top: 18px;
-    border-left: 6px solid #00d4ff;
-}
-
-.cheap {
-    border-left: 6px solid #00ff88;
-}
-
-.mid {
-    border-left: 6px solid orange;
-}
-
-.expensive {
-    border-left: 6px solid red;
-}
-
-#calendar {
-    margin-top: 30px;
-}
-
-table {
-    width: 100%;
-    border-spacing: 12px;
-}
-
-.calendar-card {
-    background: #14213d;
-    border-radius: 14px;
-    padding: 15px;
-    text-align: center;
+    margin-top: 20px;
 }
 
 .autocomplete-box {
     position: absolute;
-    top: 95px;
+    top: 90px;
     right: 0;
     background: white;
     color: black;
-    width: 250px;
+    width: 240px;
     border-radius: 10px;
     overflow: hidden;
     z-index: 999;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .autocomplete-item {
@@ -182,30 +97,16 @@ table {
     background: #f2f2f2;
 }
 
-@media (max-width: 1200px) {
+table {
+    width: 100%;
+    border-spacing: 12px;
+}
 
-    .search-box {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .field {
-        border-left: none;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .search-bar {
-        flex-direction: column;
-    }
-
-    .search-btn {
-        width: 100%;
-    }
-
-    .options-row {
-        flex-direction: column;
-        gap: 10px;
-    }
+.calendar-card {
+    background: #14213d;
+    padding: 15px;
+    border-radius: 14px;
+    text-align: center;
 }
 
 </style>
@@ -214,66 +115,63 @@ table {
 
 <body>
 
-<div class="search-wrapper" dir="rtl">
-
-    <div class="top-controls">
-
-        <select class="mini-select">
-            <option>הלוך־חזור</option>
-        </select>
-
-        <select class="mini-select">
-            <option>תיירים</option>
-        </select>
-
-    </div>
+<div class="search-wrapper">
 
     <div class="search-bar">
 
-        <button class="search-btn"
-                onclick="search()">
+        <button
+            class="search-btn"
+            onclick="search()">
 
-            חיפוש
+            Search
 
         </button>
 
         <div class="search-box">
 
-            <div class="field large">
+            <div class="field">
 
-                <label>מוצא</label>
+                <label>Origin</label>
 
                 <input
                     id="origin"
-                    type="text"
                     placeholder="TLV"
-                    onkeyup="autocomplete('origin','origin-list')"
+                    onkeyup="autocomplete(
+                        'origin',
+                        'origin-list'
+                    )"
                 >
 
-                <div id="origin-list"
-                     class="autocomplete-box"></div>
-
-            </div>
-
-            <div class="field large">
-
-                <label>יעד</label>
-
-                <input
-                    id="destination"
-                    type="text"
-                    placeholder="MAD"
-                    onkeyup="autocomplete('destination','dest-list')"
-                >
-
-                <div id="dest-list"
-                     class="autocomplete-box"></div>
+                <div
+                    id="origin-list"
+                    class="autocomplete-box">
+                </div>
 
             </div>
 
             <div class="field">
 
-                <label>יציאה</label>
+                <label>Destination</label>
+
+                <input
+                    id="destination"
+                    placeholder="MAD"
+                    onkeyup="autocomplete(
+                        'destination',
+                        'dest-list'
+                    )"
+                >
+
+                <div
+                    id="dest-list"
+                    class="autocomplete-box">
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label>Date From</label>
 
                 <input
                     id="date_from"
@@ -284,7 +182,7 @@ table {
 
             <div class="field">
 
-                <label>חזרה</label>
+                <label>Date To</label>
 
                 <input
                     id="date_to"
@@ -293,40 +191,14 @@ table {
 
             </div>
 
-            <div class="field price-field">
-
-                <label>מחיר מקסימלי</label>
-
-                <input
-                    id="price"
-                    type="number"
-                    placeholder="300"
-                >
-
-            </div>
-
         </div>
-
-    </div>
-
-    <div class="options-row">
-
-        <label>
-            <input type="checkbox" checked>
-            טיסות ישירות בלבד
-        </label>
-
-        <label>
-            <input type="checkbox">
-            חברות ישראליות בלבד
-        </label>
 
     </div>
 
     <div id="results"></div>
 
     <h2 style="margin-top:40px;">
-        📅 Cheap Dates
+        Cheap Dates
     </h2>
 
     <div id="calendar"></div>
@@ -339,12 +211,13 @@ table {
 
 function autocomplete(inputId, listId) {
 
-    let value = document
-        .getElementById(inputId)
+    let value =
+        document.getElementById(inputId)
         .value
         .toUpperCase();
 
-    let box = document.getElementById(listId);
+    let box =
+        document.getElementById(listId);
 
     box.innerHTML = "";
 
@@ -361,14 +234,17 @@ function autocomplete(inputId, listId) {
 
             box.innerHTML += `
 
-            <div class="autocomplete-item"
+            <div
+                class="autocomplete-item"
                 onclick="selectAirport(
                     '${inputId}',
                     '${listId}',
                     '${a.code}'
                 )">
 
-                ${a.flag} ${a.code} - ${a.city}
+                ${a.flag}
+                ${a.code}
+                - ${a.city}
 
             </div>
 
@@ -377,193 +253,161 @@ function autocomplete(inputId, listId) {
     });
 }
 
-function selectAirport(inputId, listId, code) {
+function selectAirport(
+    inputId,
+    listId,
+    code
+) {
 
-    document.getElementById(inputId).value = code;
+    document.getElementById(inputId)
+        .value = code;
 
-    document.getElementById(listId).innerHTML = "";
-}
-
-function getClass(price) {
-
-    if (price < 200) return "cheap";
-
-    if (price < 400) return "mid";
-
-    return "expensive";
+    document.getElementById(listId)
+        .innerHTML = "";
 }
 
 async function search() {
 
-    let origin = document
-        .getElementById("origin")
+    let origin =
+        document.getElementById("origin")
         .value
-        .toUpperCase()
-        .trim();
+        .toUpperCase();
 
-    let destination = document
-        .getElementById("destination")
+    let destination =
+        document.getElementById("destination")
         .value
-        .toUpperCase()
-        .trim();
+        .toUpperCase();
 
-    let route = `${origin}-${destination}`;
+    let route =
+        `${origin}-${destination}`;
 
-    let price =
-        document.getElementById("price").value;
+    document.getElementById("results")
+        .innerHTML = "Loading...";
 
-    let date_from =
-        document.getElementById("date_from").value;
+    const res = await fetch(
+        `/api/flights?route=${route}`
+    );
 
-    let date_to =
-        document.getElementById("date_to").value;
+    const data = await res.json();
 
-    document.getElementById("results").innerHTML =
-        "⏳ Loading...";
+    let html = "";
 
-    try {
+    let cityImages = {
 
-        const res = await fetch(
-            `/api/flights?route=${route}&max_price=${price}&date_from=${date_from}&date_to=${date_to}`
-        );
+        "CDG": "paris.jpg",
+        "ORY": "paris.jpg",
 
-        const data = await res.json();
+        "MAD": "madrid.jpg",
 
-        let html = "";
+        "FCO": "rome.jpg",
 
-        if (!data.flights || data.flights.length === 0) {
+        "BCN": "barcelona.jpg",
 
-            html = "<p>❌ No flights found</p>";
+        "LHR": "london.jpg",
 
-        } else {
+        "ATH": "athens.jpg",
 
-            let cityImages = {
+        "JFK": "newyork.jpg"
+    };
 
-                "CDG": "paris.jpg",
-                "ORY": "paris.jpg",
+    let cityImage =
+        cityImages[destination]
+        || "default.jpg";
 
-                "MAD": "madrid.jpg",
+    if (
+        !data.flights ||
+        data.flights.length === 0
+    ) {
 
-                "FCO": "rome.jpg",
+        html =
+            "<p>No flights found</p>";
 
-                "BCN": "barcelona.jpg",
+    } else {
 
-                "LHR": "london.jpg",
+        data.flights.forEach(f => {
 
-                "ATH": "athens.jpg",
+            html += `
 
-                "JFK": "newyork.jpg"
-            };
+            <div class="card">
 
-            let cityImage =
-                cityImages[destination] || "default.jpg";
+                <img
+                    src="/static/cities/${cityImage}"
+                    style="
+                    width:100%;
+                    height:180px;
+                    object-fit:cover;
+                    border-radius:14px;
+                    margin-bottom:15px;
+                    "
+                >
 
-            data.flights.forEach(f => {
+                <h2>
+                    💰 $${f.price}
+                </h2>
 
-                html += `
+                <p>
+                    📅 ${f.dep}
+                </p>
 
-                <div class="card ${getClass(f.price)}">
+            </div>
 
-                    <img
-                        src="/static/cities/${cityImage}"
-                        style="
-                        width:100%;
-                        height:180px;
-                        object-fit:cover;
-                        border-radius:14px;
-                        margin-bottom:15px;
-                        "
-                    >
-
-                    <div style="
-                    display:flex;
-                    align-items:center;
-                    gap:15px;
-                    ">
-
-                        <img
-                            src="/static/logos/elal.png"
-                            width="60"
-                        >
-
-                        <h3>💰 $${f.price}</h3>
-
-                    </div>
-
-                    <p>📅 ${f.dep}</p>
-
-                </div>
-
-                `;
-            });
-        }
-
-        document.getElementById("results").innerHTML =
-            html;
-
-        loadCalendar(route);
-
-    } catch (e) {
-
-        console.log(e);
-
-        document.getElementById("results").innerHTML =
-            "❌ Error loading flights";
+            `;
+        });
     }
+
+    document.getElementById("results")
+        .innerHTML = html;
+
+    loadCalendar(route);
 }
 
 async function loadCalendar(route) {
 
-    try {
+    const res = await fetch(
+        `/api/calendar?route=${route}`
+    );
 
-        const res = await fetch(
-            `/api/calendar?route=${route}`
-        );
+    const data = await res.json();
 
-        const data = await res.json();
+    let html = "<table>";
 
-        let html = "<table>";
+    let i = 0;
 
-        let i = 0;
+    data.dates.forEach(d => {
 
-        data.dates.forEach(d => {
+        if (i % 5 === 0) {
+            html += "<tr>";
+        }
 
-            if (i % 5 === 0) {
-                html += "<tr>";
-            }
+        html += `
 
-            html += `
+        <td>
 
-            <td>
+            <div class="calendar-card">
 
-                <div class="calendar-card">
+                <h3>${d.date}</h3>
 
-                    <h3>${d.date}</h3>
+                <p>
+                    💰 $${d.price}
+                </p>
 
-                    <p>💰 $${d.price}</p>
+            </div>
 
-                </div>
+        </td>
 
-            </td>
+        `;
 
-            `;
+        if (i % 5 === 4) {
+            html += "</tr>";
+        }
 
-            if (i % 5 === 4) {
-                html += "</tr>";
-            }
+        i++;
+    });
 
-            i++;
-        });
+    html += "</table>";
 
-        html += "</table>";
-
-        document.getElementById("calendar").innerHTML =
-            html;
-
-    } catch (e) {
-
-        console.log(e);
-    }
+    document.getElementById("calendar")
+        .innerHTML = html;
 }
 
 </script>
