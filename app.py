@@ -1,9 +1,6 @@
 from flask import Flask, render_template, request
 import sqlite3
-import requests
 from serpapi import GoogleSearch
-from datetime import datetime, timedelta
-import random
 import os
 
 app = Flask(__name__)
@@ -34,6 +31,7 @@ init_db()
 # -----------------------------
 @app.route("/")
 def index():
+
     return render_template("index.html")
 
 # -----------------------------
@@ -41,6 +39,7 @@ def index():
 # -----------------------------
 @app.route("/map")
 def map_view():
+
     return render_template("map.html")
 
 # -----------------------------
@@ -52,16 +51,21 @@ def get_flights():
     route = request.args.get("route")
 
     if not route:
-        return {"flights": []}
+
+        return {
+            "flights": []
+        }
 
     route = route.upper().strip()
 
     try:
+
         origin, dest = route.split("-")
 
     except:
+
         return {
-            "error": "Invalid route format",
+            "error": "Invalid route",
             "flights": []
         }
 
@@ -92,28 +96,36 @@ def get_flights():
 
         "hl": "en",
 
-        # 🔥 ВСТАВЬ СВОЙ НОВЫЙ API KEY
-        "api_key": "7b49e9ba112999eb5c2fdc88c63249130212492f2ec3088aa690a211b21e0924"
+        "api_key": os.environ.get(
+            "14064776908faf62159f7e66b42563f4885bface04299df3934460d32657c138"
+        )
     }
 
     try:
 
-        print("========== SERPAPI REQUEST ==========")
+        print("========== REQUEST ==========")
         print(params)
-        print("=====================================")
+        print("=============================")
 
         search = GoogleSearch(params)
 
         results = search.get_dict()
 
-        print("========== SERPAPI RESPONSE ==========")
+        print("========== RESPONSE ==========")
         print(results)
-        print("======================================")
+        print("==============================")
 
         best_flights = results.get(
             "best_flights",
             []
         )
+
+        if not best_flights:
+
+            best_flights = results.get(
+                "other_flights",
+                []
+            )
 
         flights = []
 
@@ -123,18 +135,19 @@ def get_flights():
 
             try:
 
-    numeric_price = int(
-        str(price).replace("$", "")
-    )
+                numeric_price = int(
+                    str(price).replace("$", "")
+                )
 
-except:
+            except:
 
-    numeric_price = 0
+                numeric_price = 0
 
-if max_price:
+            if max_price:
 
-    if numeric_price > int(max_price):
-        continue
+                if numeric_price > int(max_price):
+
+                    continue
 
             flights.append({
 
@@ -145,8 +158,13 @@ if max_price:
                 "arr": date_to
             })
 
-            # сохраняем в БД
-            conn = sqlite3.connect("flights.db")
+            # -----------------------------
+            # СОХРАНЕНИЕ В БАЗУ
+            # -----------------------------
+            conn = sqlite3.connect(
+                "flights.db"
+            )
+
             c = conn.cursor()
 
             c.execute(
@@ -154,23 +172,27 @@ if max_price:
                 (
                     route,
                     date_from,
-                    price
+                    numeric_price
                 )
             )
 
             conn.commit()
             conn.close()
 
-        return {"flights": flights}
+        return {
+            "flights": flights
+        }
 
     except Exception as e:
 
-        print("========== SERPAPI ERROR ==========")
+        print("========== ERROR ==========")
         print(str(e))
-        print("===================================")
+        print("===========================")
 
         return {
+
             "error": str(e),
+
             "flights": []
         }
 
@@ -183,19 +205,33 @@ def calendar():
     route = request.args.get("route")
 
     if not route:
-        return {"dates": []}
+
+        return {
+            "dates": []
+        }
 
     route = route.upper().strip()
 
-    conn = sqlite3.connect("flights.db")
+    conn = sqlite3.connect(
+        "flights.db"
+    )
+
     c = conn.cursor()
 
     c.execute("""
-        SELECT date, MIN(price)
+
+        SELECT
+            date,
+            MIN(price)
+
         FROM flights
+
         WHERE route=?
+
         GROUP BY date
+
         ORDER BY date
+
     """, (route,))
 
     rows = c.fetchall()
@@ -221,7 +257,10 @@ def calendar():
 if __name__ == "__main__":
 
     app.run(
+
         host="0.0.0.0",
+
         port=5000,
+
         debug=True
     )
