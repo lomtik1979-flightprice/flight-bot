@@ -360,16 +360,18 @@ function autocomplete(inputId, listId) {
         ) {
 
             box.innerHTML += `
-                <div class="autocomplete-item"
-                    onclick="selectAirport(
-                        '${inputId}',
-                        '${listId}',
-                        '${a.code}'
-                    )">
 
-                    ${a.flag} ${a.code} - ${a.city}
+            <div class="autocomplete-item"
+                onclick="selectAirport(
+                    '${inputId}',
+                    '${listId}',
+                    '${a.code}'
+                )">
 
-                </div>
+                ${a.flag} ${a.code} - ${a.city}
+
+            </div>
+
             `;
         }
     });
@@ -435,26 +437,27 @@ async function search() {
 
         } else {
 
-let cityImages = {
+            let cityImages = {
 
-    "CDG": "paris.jpg",
-    "ORY": "paris.jpg",
+                "CDG": "paris.jpg",
+                "ORY": "paris.jpg",
 
-    "MAD": "madrid.jpg",
+                "MAD": "madrid.jpg",
 
-    "FCO": "rome.jpg",
+                "FCO": "rome.jpg",
 
-    "BCN": "barcelona.jpg",
+                "BCN": "barcelona.jpg",
 
-    "LHR": "london.jpg",
+                "LHR": "london.jpg",
 
-    "ATH": "athens.jpg",
+                "ATH": "athens.jpg",
 
-    "JFK": "newyork.jpg"
-};
+                "JFK": "newyork.jpg"
+            };
 
-let cityImage =
-    cityImages[destination] || "default.jpg";
+            let cityImage =
+                cityImages[destination] || "default.jpg";
+
             data.flights.forEach(f => {
 
                 html += `
@@ -530,17 +533,19 @@ async function loadCalendar(route) {
             }
 
             html += `
-                <td>
 
-                    <div class="calendar-card">
+            <td>
 
-                        <h3>${d.date}</h3>
+                <div class="calendar-card">
 
-                        <p>💰 $${d.price}</p>
+                    <h3>${d.date}</h3>
 
-                    </div>
+                    <p>💰 $${d.price}</p>
 
-                </td>
+                </div>
+
+            </td>
+
             `;
 
             if (i % 5 === 4) {
