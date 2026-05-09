@@ -4,6 +4,7 @@ import requests
 from serpapi import GoogleSearch
 from datetime import datetime, timedelta
 import random
+import os
 
 app = Flask(__name__)
 
@@ -53,13 +54,26 @@ def get_flights():
     if not route:
         return {"flights": []}
 
+    route = route.upper().strip()
+
     try:
         origin, dest = route.split("-")
+
     except:
-        return {"flights": []}
+        return {
+            "error": "Invalid route format",
+            "flights": []
+        }
 
     date_from = request.args.get("date_from")
     date_to = request.args.get("date_to")
+
+    if not date_from or not date_to:
+
+        return {
+            "error": "Missing dates",
+            "flights": []
+        }
 
     params = {
 
@@ -77,15 +91,23 @@ def get_flights():
 
         "hl": "en",
 
-        "api_key": "26e06478b4b9a2349b9f9373c8ec8f3c7de19e56fa5bb93771a6a741634e51db"
+        # 🔥 ВСТАВЬ СВОЙ НОВЫЙ API KEY
+        "api_key": "7b49e9ba112999eb5c2fdc88c63249130212492f2ec3088aa690a211b21e0924"
     }
 
     try:
+
+        print("========== SERPAPI REQUEST ==========")
         print(params)
+        print("=====================================")
 
         search = GoogleSearch(params)
 
         results = search.get_dict()
+
+        print("========== SERPAPI RESPONSE ==========")
+        print(results)
+        print("======================================")
 
         best_flights = results.get(
             "best_flights",
@@ -107,18 +129,34 @@ def get_flights():
                 "arr": date_to
             })
 
+            # сохраняем в БД
+            conn = sqlite3.connect("flights.db")
+            c = conn.cursor()
+
+            c.execute(
+                "INSERT INTO flights VALUES (?, ?, ?)",
+                (
+                    route,
+                    date_from,
+                    price
+                )
+            )
+
+            conn.commit()
+            conn.close()
+
         return {"flights": flights}
 
     except Exception as e:
 
-    print("========== SERPAPI ERROR ==========")
-    print(str(e))
-    print("===================================")
+        print("========== SERPAPI ERROR ==========")
+        print(str(e))
+        print("===================================")
 
-    return {
-        "error": str(e),
-        "flights": []
-    }
+        return {
+            "error": str(e),
+            "flights": []
+        }
 
 # -----------------------------
 # КАЛЕНДАРЬ
@@ -131,6 +169,8 @@ def calendar():
     if not route:
         return {"dates": []}
 
+    route = route.upper().strip()
+
     conn = sqlite3.connect("flights.db")
     c = conn.cursor()
 
@@ -140,18 +180,21 @@ def calendar():
         WHERE route=?
         GROUP BY date
         ORDER BY date
-    """, (route.upper(),))
+    """, (route,))
 
     rows = c.fetchall()
 
     conn.close()
 
     return {
+
         "dates": [
+
             {
                 "date": r[0],
                 "price": r[1]
             }
+
             for r in rows
         ]
     }
@@ -160,4 +203,9 @@ def calendar():
 # START
 # -----------------------------
 if __name__ == "__main__":
-    app.run()
+
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )
