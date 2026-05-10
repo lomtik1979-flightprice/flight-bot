@@ -54,6 +54,8 @@
             display: flex;
 
             flex-direction: column;
+
+            position: relative;
         }
 
         .field label {
@@ -235,6 +237,47 @@
             font-weight: bold;
         }
 
+        /* AUTOCOMPLETE */
+
+        .autocomplete-box {
+
+            position: absolute;
+
+            top: 60px;
+
+            left: 0;
+
+            width: 100%;
+
+            background: white;
+
+            color: black;
+
+            border-radius: 12px;
+
+            max-height: 250px;
+
+            overflow-y: auto;
+
+            z-index: 9999;
+
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .autocomplete-item {
+
+            padding: 12px;
+
+            cursor: pointer;
+
+            border-bottom: 1px solid #ddd;
+        }
+
+        .autocomplete-item:hover {
+
+            background: #f0f0f0;
+        }
+
     </style>
 
 </head>
@@ -247,23 +290,61 @@
 
     <div class="search-bar">
 
-        <div class="field">
-
-            <input
-                id="origin"
-                placeholder="TLV"
-            >
-
-        </div>
+        <!-- ORIGIN -->
 
         <div class="field">
 
-            <input
-                id="destination"
-                placeholder="CDG"
-            >
+            <div style="position:relative;">
+
+                <input
+                    id="origin"
+                    placeholder="From airport"
+                    autocomplete="off"
+                    onkeyup="
+                        autocompleteAirport(
+                            'origin',
+                            'origin-list'
+                        )
+                    "
+                >
+
+                <div
+                    id="origin-list"
+                    class="autocomplete-box"
+                ></div>
+
+            </div>
 
         </div>
+
+        <!-- DESTINATION -->
+
+        <div class="field">
+
+            <div style="position:relative;">
+
+                <input
+                    id="destination"
+                    placeholder="To airport"
+                    autocomplete="off"
+                    onkeyup="
+                        autocompleteAirport(
+                            'destination',
+                            'destination-list'
+                        )
+                    "
+                >
+
+                <div
+                    id="destination-list"
+                    class="autocomplete-box"
+                ></div>
+
+            </div>
+
+        </div>
+
+        <!-- DATE FROM -->
 
         <div class="field">
 
@@ -276,6 +357,8 @@
 
         </div>
 
+        <!-- DATE TO -->
+
         <div class="field">
 
             <label>To</label>
@@ -286,6 +369,8 @@
             >
 
         </div>
+
+        <!-- MAX PRICE -->
 
         <div class="field">
 
@@ -298,6 +383,8 @@
             >
 
         </div>
+
+        <!-- SEARCH BUTTON -->
 
         <div class="field">
 
@@ -327,6 +414,10 @@
     <div id="calendar"></div>
 
 </div>
+
+<!-- AIRPORTS DATABASE -->
+
+<script src="/static/airports.js"></script>
 
 <script>
 
@@ -543,6 +634,92 @@ async function loadCalendar(route) {
 
         console.log(e);
     }
+}
+
+/* AUTOCOMPLETE */
+
+function autocompleteAirport(
+    inputId,
+    listId
+) {
+
+    let value = document
+        .getElementById(inputId)
+        .value
+        .toUpperCase();
+
+    let box = document
+        .getElementById(listId);
+
+    box.innerHTML = "";
+
+    if (value.length < 1) {
+
+        return;
+    }
+
+    airports.forEach(a => {
+
+        if (
+
+            a.code.includes(value)
+
+            ||
+
+            a.city.toUpperCase().includes(value)
+
+            ||
+
+            a.airport.toUpperCase().includes(value)
+
+        ) {
+
+            box.innerHTML += `
+
+            <div
+                class="autocomplete-item"
+                onclick="
+                    selectAirport(
+                        '${inputId}',
+                        '${listId}',
+                        '${a.code}'
+                    )
+                "
+            >
+
+                ${a.flag}
+
+                <b>${a.code}</b>
+
+                —
+                ${a.city}
+
+                <br>
+
+                <small>
+                    ${a.airport}
+                </small>
+
+            </div>
+
+            `;
+        }
+    });
+}
+
+function selectAirport(
+    inputId,
+    listId,
+    code
+) {
+
+    document.getElementById(
+        inputId
+    ).value = code;
+
+    document.getElementById(
+        listId
+    ).innerHTML = "";
 }
 
 </script>

@@ -1,66 +1,83 @@
 const airports = [
 
-{
-    code: "TLV",
-    city: "Tel Aviv",
-    country: "Israel",
-    flag: "🇮🇱"
-},
+    {
+        code: "TLV",
+        city: "Tel Aviv",
+        airport: "Ben Gurion Airport",
+        country: "Israel",
+        flag: "🇮🇱"
+    },
 
-{
-    code: "CDG",
-    city: "Paris",
-    country: "France",
-    flag: "🇫🇷"
-},
+    {
+        code: "JFK",
+        city: "New York",
+        airport: "John F. Kennedy Airport",
+        country: "USA",
+        flag: "🇺🇸"
+    },
 
-{
-    code: "ORY",
-    city: "Paris",
-    country: "France",
-    flag: "🇫🇷"
-},
+    {
+        code: "LHR",
+        city: "London",
+        airport: "Heathrow Airport",
+        country: "United Kingdom",
+        flag: "🇬🇧"
+    },
 
-{
-    code: "MAD",
-    city: "Madrid",
-    country: "Spain",
-    flag: "🇪🇸"
-},
+    {
+        code: "CDG",
+        city: "Paris",
+        airport: "Charles de Gaulle Airport",
+        country: "France",
+        flag: "🇫🇷"
+    },
 
-{
-    code: "BCN",
-    city: "Barcelona",
-    country: "Spain",
-    flag: "🇪🇸"
-},
+    {
+        code: "MAD",
+        city: "Madrid",
+        airport: "Madrid Barajas Airport",
+        country: "Spain",
+        flag: "🇪🇸"
+    },
 
-{
-    code: "FCO",
-    city: "Rome",
-    country: "Italy",
-    flag: "🇮🇹"
-},
+    {
+        code: "FCO",
+        city: "Rome",
+        airport: "Leonardo da Vinci Airport",
+        country: "Italy",
+        flag: "🇮🇹"
+    },
 
-{
-    code: "LHR",
-    city: "London",
-    country: "UK",
-    flag: "🇬🇧"
-},
+    {
+        code: "ATH",
+        city: "Athens",
+        airport: "Athens International Airport",
+        country: "Greece",
+        flag: "🇬🇷"
+    },
 
-{
-    code: "ATH",
-    city: "Athens",
-    country: "Greece",
-    flag: "🇬🇷"
-},
+    {
+        code: "BCN",
+        city: "Barcelona",
+        airport: "Barcelona Airport",
+        country: "Spain",
+        flag: "🇪🇸"
+    },
 
-{
-    code: "JFK",
-    city: "New York",
-    country: "USA",
-    flag: "🇺🇸"
-}
+    {
+        code: "DXB",
+        city: "Dubai",
+        airport: "Dubai International Airport",
+        country: "UAE",
+        flag: "🇦🇪"
+    },
+
+    {
+        code: "BKK",
+        city: "Bangkok",
+        airport: "Suvarnabhumi Airport",
+        country: "Thailand",
+        flag: "🇹🇭"
+    }
 
 ];
