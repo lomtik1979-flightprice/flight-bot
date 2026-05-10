@@ -24,7 +24,7 @@
 
             color: white;
 
-            font-family: Arial;
+            font-family: Arial, sans-serif;
         }
 
         .container {
@@ -33,7 +33,7 @@
 
             margin: auto;
 
-            padding-top: 30px;
+            padding-top: 20px;
         }
 
         .search-bar {
@@ -45,6 +45,8 @@
             gap: 15px;
 
             flex-wrap: wrap;
+
+            margin-bottom: 40px;
         }
 
         .field {
@@ -102,62 +104,103 @@
 
         #results {
 
-            margin-top: 40px;
+            margin-top: 30px;
         }
 
-        .card {
+        .flight-card {
 
-            background: #102d50;
+            background: #12345f;
 
-            border-radius: 18px;
+            border-radius: 22px;
 
             overflow: hidden;
 
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .card img {
+        .flight-card img.city {
 
             width: 100%;
 
-            height: 220px;
+            height: 240px;
 
             object-fit: cover;
         }
 
         .card-content {
 
-            padding: 20px;
+            padding: 25px;
+        }
+
+        .airline-row {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+        .airline-logo {
+
+            width: 70px;
+
+            height: 70px;
+
+            object-fit: contain;
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 5px;
         }
 
         .price {
 
-            font-size: 32px;
+            color: #00ff99;
+
+            font-size: 44px;
 
             font-weight: bold;
 
-            color: #00ff99;
+            margin-top: 10px;
         }
 
-        .dates {
+        .flight-info {
 
             margin-top: 10px;
 
             font-size: 18px;
         }
 
-        .calendar-title {
+        .direct {
 
-            margin-top: 50px;
-
-            font-size: 42px;
+            color: #00ff99;
 
             font-weight: bold;
         }
 
-        #calendar {
+        .stops {
 
-            margin-top: 25px;
+            color: orange;
+
+            font-weight: bold;
+        }
+
+        .calendar-title {
+
+            margin-top: 50px;
+
+            margin-bottom: 20px;
+
+            font-size: 42px;
+
+            font-weight: bold;
         }
 
         table {
@@ -171,11 +214,25 @@
 
             background: #12345f;
 
-            border-radius: 16px;
+            border-radius: 18px;
 
             padding: 20px;
 
             text-align: center;
+        }
+
+        .calendar-card h3 {
+
+            margin: 0;
+        }
+
+        .calendar-card p {
+
+            color: #00ff99;
+
+            font-size: 24px;
+
+            font-weight: bold;
         }
 
     </style>
@@ -215,7 +272,6 @@
             <input
                 id="date_from"
                 type="date"
-                value="2026-06-01"
             >
 
         </div>
@@ -227,7 +283,6 @@
             <input
                 id="date_to"
                 type="date"
-                value="2026-06-22"
             >
 
         </div>
@@ -239,7 +294,7 @@
             <input
                 id="max_price"
                 type="number"
-                placeholder="500"
+                placeholder="1000"
             >
 
         </div>
@@ -304,11 +359,11 @@ async function searchFlights() {
 
     document.getElementById(
         "results"
-    ).innerHTML = "Loading...";
+    ).innerHTML = "<h2>Loading...</h2>";
 
     try {
 
-        const res = await fetch(
+        const response = await fetch(
 
             `/api/flights?route=${route}` +
 
@@ -319,7 +374,7 @@ async function searchFlights() {
             `&max_price=${max_price}`
         );
 
-        const data = await res.json();
+        const data = await response.json();
 
         let html = "";
 
@@ -328,8 +383,11 @@ async function searchFlights() {
             data.flights.length === 0
         ) {
 
-            html =
-                "<h2>No flights found</h2>";
+            html = `
+                <h2>
+                    No flights found
+                </h2>
+            `;
 
         } else {
 
@@ -337,13 +395,45 @@ async function searchFlights() {
 
                 html += `
 
-                <div class="card">
+                <div class="flight-card">
 
                     <img
-                        src="/static/cities/default.jpg"
+                        class="city"
+                        src="${f.city_image}"
                     >
 
                     <div class="card-content">
+
+                        <div class="airline-row">
+
+                            <img
+                                class="airline-logo"
+                                src="${f.airline_logo}"
+                            >
+
+                            <div>
+
+                                <h2>
+                                    ${f.airline}
+                                </h2>
+
+                                <p class="${
+                                    f.direct
+                                    ? "direct"
+                                    : "stops"
+                                }">
+
+                                    ${
+                                        f.direct
+                                        ? "Direct Flight"
+                                        : "With Stops"
+                                    }
+
+                                </p>
+
+                            </div>
+
+                        </div>
 
                         <div class="price">
 
@@ -351,7 +441,7 @@ async function searchFlights() {
 
                         </div>
 
-                        <div class="dates">
+                        <div class="flight-info">
 
                             ${f.dep}
                             →
@@ -359,9 +449,17 @@ async function searchFlights() {
 
                         </div>
 
+                        <div class="flight-info">
+
+                            Duration:
+                            ${f.duration} min
+
+                        </div>
+
                     </div>
 
                 </div>
+
                 `;
             });
         }
@@ -378,8 +476,9 @@ async function searchFlights() {
 
         document.getElementById(
             "results"
-        ).innerHTML =
-            "<h2>Server Error</h2>";
+        ).innerHTML = `
+            <h2>Server Error</h2>
+        `;
     }
 }
 
@@ -387,14 +486,14 @@ async function loadCalendar(route) {
 
     try {
 
-        const res = await fetch(
+        const response = await fetch(
             `/api/calendar?route=${route}`
         );
 
-        const data = await res.json();
+        const data = await response.json();
 
         let html = `
-        <table>
+            <table>
         `;
 
         let i = 0;
@@ -412,13 +511,18 @@ async function loadCalendar(route) {
 
                 <div class="calendar-card">
 
-                    <h3>${d.date}</h3>
+                    <h3>
+                        ${d.date}
+                    </h3>
 
-                    <p>$${d.price}</p>
+                    <p>
+                        $${d.price}
+                    </p>
 
                 </div>
 
             </td>
+
             `;
 
             if (i % 4 === 3) {

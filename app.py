@@ -99,8 +99,6 @@ def get_flights():
 
         "hl": "en",
 
-        # RENDER ENV VARIABLE
-        # SERPAPI_KEY = your_real_key
         "api_key": os.environ.get(
             "SERPAPI_KEY"
         )
@@ -110,9 +108,6 @@ def get_flights():
 
         print("========== REQUEST ==========")
         print(params)
-
-        print("========== ENV KEY ==========")
-        print(os.environ.get("SERPAPI_KEY"))
 
         search = GoogleSearch(params)
 
@@ -127,7 +122,6 @@ def get_flights():
             []
         )
 
-        # fallback
         if not best_flights:
 
             best_flights = results.get(
@@ -166,13 +160,88 @@ def get_flights():
 
                     pass
 
+            # -----------------------------
+            # AIRLINE LOGO
+            # -----------------------------
+            airline_logo = ""
+
+            try:
+
+                airline_logo = f[
+                    "airline_logo"
+                ]
+
+            except:
+
+                pass
+
+            # -----------------------------
+            # CITY IMAGE
+            # -----------------------------
+            city_image = ""
+
+            try:
+
+                city_image = results[
+                    "airports"
+                ][0]["arrival"][0]["image"]
+
+            except:
+
+                pass
+
+            # -----------------------------
+            # AIRLINE NAME
+            # -----------------------------
+            airline_name = ""
+
+            try:
+
+                airline_name = f[
+                    "flights"
+                ][0]["airline"]
+
+            except:
+
+                pass
+
+            # -----------------------------
+            # DURATION
+            # -----------------------------
+            duration = f.get(
+                "total_duration",
+                0
+            )
+
+            # -----------------------------
+            # DIRECT FLIGHT
+            # -----------------------------
+            direct = True
+
+            if "layovers" in f:
+
+                direct = False
+
+            # -----------------------------
+            # SAVE FLIGHT
+            # -----------------------------
             flights.append({
 
                 "price": numeric_price,
 
                 "dep": date_from,
 
-                "arr": date_to
+                "arr": date_to,
+
+                "airline": airline_name,
+
+                "airline_logo": airline_logo,
+
+                "city_image": city_image,
+
+                "duration": duration,
+
+                "direct": direct
             })
 
             # -----------------------------
