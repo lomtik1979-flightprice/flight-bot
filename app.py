@@ -122,6 +122,7 @@ def get_flights():
             []
         )
 
+        # fallback
         if not best_flights:
 
             best_flights = results.get(
@@ -129,10 +130,70 @@ def get_flights():
                 []
             )
 
+        # -----------------------------
+        # SORT CHEAPEST FIRST
+        # -----------------------------
+        best_flights = sorted(
+
+            best_flights,
+
+            key=lambda x: x.get(
+                "price",
+                999999
+            )
+        )
+
         flights = []
 
+        # -----------------------------
+        # ISRAELI AIRLINES ONLY
+        # -----------------------------
+        allowed_airlines = [
+
+            "El Al",
+
+            "Arkia",
+
+            "Israir"
+        ]
+
+        # -----------------------------
+        # LOOP FLIGHTS
+        # -----------------------------
         for f in best_flights:
 
+            # -----------------------------
+            # DIRECT FLIGHTS ONLY
+            # -----------------------------
+            if "layovers" in f:
+
+                continue
+
+            # -----------------------------
+            # AIRLINE NAME
+            # -----------------------------
+            airline_name = ""
+
+            try:
+
+                airline_name = f[
+                    "flights"
+                ][0]["airline"]
+
+            except:
+
+                pass
+
+            # -----------------------------
+            # ONLY ISRAELI AIRLINES
+            # -----------------------------
+            if airline_name not in allowed_airlines:
+
+                continue
+
+            # -----------------------------
+            # PRICE
+            # -----------------------------
             price = f.get("price", 0)
 
             try:
@@ -191,36 +252,12 @@ def get_flights():
                 pass
 
             # -----------------------------
-            # AIRLINE NAME
-            # -----------------------------
-            airline_name = ""
-
-            try:
-
-                airline_name = f[
-                    "flights"
-                ][0]["airline"]
-
-            except:
-
-                pass
-
-            # -----------------------------
             # DURATION
             # -----------------------------
             duration = f.get(
                 "total_duration",
                 0
             )
-
-            # -----------------------------
-            # DIRECT FLIGHT
-            # -----------------------------
-            direct = True
-
-            if "layovers" in f:
-
-                direct = False
 
             # -----------------------------
             # SAVE FLIGHT
@@ -241,7 +278,7 @@ def get_flights():
 
                 "duration": duration,
 
-                "direct": direct
+                "direct": True
             })
 
             # -----------------------------
