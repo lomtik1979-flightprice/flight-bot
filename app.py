@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # -----------------------------
-# БАЗА
+# DATABASE
 # -----------------------------
 def init_db():
 
@@ -27,7 +27,7 @@ def init_db():
 init_db()
 
 # -----------------------------
-# ГЛАВНАЯ
+# HOME
 # -----------------------------
 @app.route("/")
 def index():
@@ -35,7 +35,7 @@ def index():
     return render_template("index.html")
 
 # -----------------------------
-# КАРТА
+# MAP
 # -----------------------------
 @app.route("/map")
 def map_view():
@@ -43,7 +43,7 @@ def map_view():
     return render_template("map.html")
 
 # -----------------------------
-# API РЕЙСОВ
+# FLIGHTS API
 # -----------------------------
 @app.route("/api/flights")
 def get_flights():
@@ -80,6 +80,9 @@ def get_flights():
             "flights": []
         }
 
+    # -----------------------------
+    # SERPAPI REQUEST
+    # -----------------------------
     params = {
 
         "engine": "google_flights",
@@ -96,8 +99,10 @@ def get_flights():
 
         "hl": "en",
 
+        # RENDER ENV VARIABLE
+        # SERPAPI_KEY = your_real_key
         "api_key": os.environ.get(
-            "14064776908faf62159f7e66b42563f4885bface04299df3934460d32657c138"
+            "SERPAPI_KEY"
         )
     }
 
@@ -105,16 +110,15 @@ def get_flights():
 
         print("========== REQUEST ==========")
         print(params)
-        print("=============================")
+
+        print("========== ENV KEY ==========")
+        print(os.environ.get("SERPAPI_KEY"))
 
         search = GoogleSearch(params)
 
         results = search.get_dict()
 
         print("========== RESPONSE ==========")
-        print("API KEY:")
-        print(os.environ.get("SERPAPI_KEY"))
-
         print(results)
         print("==============================")
 
@@ -123,6 +127,7 @@ def get_flights():
             []
         )
 
+        # fallback
         if not best_flights:
 
             best_flights = results.get(
@@ -146,11 +151,20 @@ def get_flights():
 
                 numeric_price = 0
 
+            # -----------------------------
+            # MAX PRICE FILTER
+            # -----------------------------
             if max_price:
 
-                if numeric_price > int(max_price):
+                try:
 
-                    continue
+                    if numeric_price > int(max_price):
+
+                        continue
+
+                except:
+
+                    pass
 
             flights.append({
 
@@ -162,7 +176,7 @@ def get_flights():
             })
 
             # -----------------------------
-            # СОХРАНЕНИЕ В БАЗУ
+            # SAVE TO DATABASE
             # -----------------------------
             conn = sqlite3.connect(
                 "flights.db"
@@ -183,6 +197,7 @@ def get_flights():
             conn.close()
 
         return {
+
             "flights": flights
         }
 
@@ -200,7 +215,7 @@ def get_flights():
         }
 
 # -----------------------------
-# КАЛЕНДАРЬ
+# CALENDAR
 # -----------------------------
 @app.route("/api/calendar")
 def calendar():
