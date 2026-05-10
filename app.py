@@ -112,6 +112,9 @@ def get_flights():
         results = search.get_dict()
 
         print("========== RESPONSE ==========")
+        print("API KEY:")
+        print(os.environ.get("SERPAPI_KEY"))
+
         print(results)
         print("==============================")
 
